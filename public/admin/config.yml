@@ -83,6 +83,23 @@ collections:
       - { label: Photo description (for accessibility), name: imageAlt, widget: string, required: false }
       - { label: Caption, name: body, widget: markdown }
 
+  - name: resources
+    label: Resources
+    label_singular: Resource
+    folder: src/content/resources
+    extension: md
+    create: true
+    slug: "{{slug}}"
+    summary: "{{type}} · {{title}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Type, name: type, widget: select, options: [{ label: Reading list, value: reading-list }, { label: Book suggestion, value: book }, { label: Course outline, value: course }] }
+      - { label: Author / instructor, name: author, widget: string, required: false }
+      - { label: Short description, name: description, widget: text, required: false }
+      - { label: Link, name: link, widget: string, required: false, hint: "Link to the book, an article, or a PDF of the course outline" }
+      - { label: Order (1 shows first), name: order, widget: number, value_type: int, default: 10 }
+      - { label: Details (for reading lists: the list of texts), name: body, widget: markdown, required: false }
+
   - name: pages
     label: Pages
     files:

@@ -59,6 +59,20 @@ const events = defineCollection({
   }),
 });
 
+// Resources page: reading lists, book suggestions and course outlines.
+const resources = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/resources' }),
+  schema: z.object({
+    title: z.string(),
+    type: z.enum(['reading-list', 'book', 'course']),
+    author: z.string().optional(),
+    description: z.string().optional(),
+    // A link to the book, an article, or a PDF of the course outline.
+    link: z.string().optional(),
+    order: z.number().default(10),
+  }),
+});
+
 const pages = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
   schema: z.object({
@@ -67,4 +81,4 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { issues, posts, featured, events, pages };
+export const collections = { issues, posts, featured, events, resources, pages };

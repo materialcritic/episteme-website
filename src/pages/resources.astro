@@ -1,0 +1,62 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Contact from '../components/Contact.astro';
+
+const all = (await getCollection('resources')).sort((a, b) => a.data.order - b.data.order);
+
+const groups = [
+  { type: 'reading-list', id: 'reading-lists', title: 'Reading Lists', sub: 'Curated lists to get you started on a topic.', cta: 'Open list' },
+  { type: 'book', id: 'books', title: 'Book Suggestions', sub: 'Books the editors and faculty recommend.', cta: 'View book' },
+  { type: 'course', id: 'courses', title: 'Course Outlines', sub: 'Syllabi and outlines from the department.', cta: 'View outline' },
+] as const;
+
+const sections = await Promise.all(
+  groups.map(async (g) => ({
+    ...g,
+    items: await Promise.all(
+      all.filter((r) => r.data.type === g.type).map(async (r) => ({
+        r,
+        Content: r.body?.trim() ? (await render(r)).Content : null,
+      })),
+    ),
+  })),
+);
+---
+<Base title="Resources" description="Reading lists, book suggestions and course outlines from the Episteme community.">
+  <div class="wrap">
+    <div class="page-head">
+      <h1 class="page">Resources</h1>
+      <p class="sub">Reading lists, book suggestions and course outlines.</p>
+      <nav class="res-nav" aria-label="Resource types">
+        {sections.map((s) => <a href={`#${s.id}`}>{s.title}</a>)}
+      </nav>
+    </div>
+
+    {sections.map((s) => (
+      <section class="block" id={s.id} style="scroll-margin-top:10px">
+        <h2>{s.title}</h2><p class="sub">{s.sub}</p>
+        {s.items.length > 0 ? (
+          <div class="res-grid">
+            {s.items.map(({ r, Content }) => {
+              const Tag = r.data.link ? 'a' : 'article';
+              return (
+                <Tag class="res-card" href={r.data.link} target={r.data.link ? '_blank' : undefined} rel={r.data.link ? 'noopener' : undefined}>
+                  <div class="kicker">{s.title.replace(/s$/, '')}</div>
+                  <h3>{r.data.title}</h3>
+                  {r.data.author && <p class="by">{r.data.author}</p>}
+                  {r.data.description && <p class="desc">{r.data.description}</p>}
+                  {Content && <div class="prose"><Content /></div>}
+                  {r.data.link && <span class="go">{s.cta} ↗</span>}
+                </Tag>
+              );
+            })}
+          </div>
+        ) : (
+          <p class="sub">Coming soon.</p>
+        )}
+      </section>
+    ))}
+  </div>
+  <Contact />
+</Base>

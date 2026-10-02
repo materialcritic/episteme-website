@@ -11,11 +11,25 @@ img{max-width:100%;display:block}
 .topbar{border-bottom:1px solid var(--rule);font:500 12px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .topbar .wrap{display:flex;justify-content:space-between;gap:12px;padding:10px 20px}
 header.masthead{text-align:center;padding:34px 0 18px;border-bottom:3px double var(--ink)}
-.logo{font:900 clamp(44px,8vw,84px)/1 'Playfair Display',serif;letter-spacing:-.01em;display:inline-block}
-.tag{font-style:italic;color:var(--muted);margin-top:6px}
+.logo{font:900 clamp(44px,8vw,84px)/1.15 'Playfair Display',serif;letter-spacing:-.01em;display:inline-block}
+.tagline{font-style:italic;color:var(--muted);margin-top:12px}
 nav.main{border-bottom:1px solid var(--ink);font:600 13px 'Inter',sans-serif;letter-spacing:.1em;text-transform:uppercase}
 nav.main .wrap{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 30px;padding:14px 20px}
 nav.main a:hover,nav.main a[aria-current="page"]{color:var(--accent)}
+
+/* resources */
+.res-nav{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 10px}
+.res-nav a{font:600 12px 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:7px 14px;border:1px solid var(--ink)}
+.res-nav a:hover{background:var(--ink);color:var(--paper)}
+.res-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:26px}
+.res-card{background:var(--card);border:1px solid var(--rule);padding:24px}
+a.res-card:hover{border-color:var(--accent)}
+.res-card h3{font:700 22px/1.25 'Playfair Display',serif;margin:6px 0 4px}
+.res-card .by{font-size:15px;color:var(--muted)}
+.res-card .desc{margin-top:8px;color:#3d372f;font-size:16.5px}
+.res-card .prose{margin-top:12px;font-size:16.5px}
+.res-card .prose ol,.res-card .prose ul{margin-bottom:0}
+.res-card .go{display:inline-block;margin-top:12px;font:600 12px 'Inter',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
 
 /* shared */
 .kicker{font:600 12px 'Inter',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
@@ -151,7 +165,7 @@ footer.site .soc a:hover{color:#f2c7cd}
   .contact-grid{grid-template-columns:1fr;gap:44px}
   .contact-grid>div{padding:0}
   .contact-grid>div+div{border-left:0;border-top:1px solid #3a342c;padding-top:40px}
-  .posts.three{grid-template-columns:1fr}
+  .posts.three,.res-grid{grid-template-columns:1fr}
   .hero,.about,.issue-top{grid-template-columns:1fr}
   .featured,.events{grid-template-columns:1fr}
   .editions{grid-template-columns:repeat(2,1fr)}
