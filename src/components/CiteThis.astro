@@ -1,0 +1,55 @@
+---
+import { citations } from '../lib/cite';
+import { SITE } from '../config';
+
+interface Props {
+  title: string;
+  author: string;
+  date: Date;
+  path: string;
+}
+const { title, author, date, path } = Astro.props;
+const url = new URL(path, Astro.site).toString();
+const { apa, mla } = citations({ title, author, date, url, site: SITE.name });
+const styles = [
+  ['APA (7th ed.)', apa],
+  ['MLA (9th ed.)', mla],
+];
+---
+<details class="cite">
+  <summary><span class="kicker">Cite this post</span></summary>
+  {styles.map(([label, html]) => (
+    <div class="cite-row">
+      <div class="cite-head">
+        <strong>{label}</strong>
+        <button type="button" class="cite-copy">Copy</button>
+      </div>
+      <p class="cite-text" set:html={html} />
+    </div>
+  ))}
+</details>
+<script>
+  // Copies with italics intact (for Word or Google Docs), plain text as a fallback.
+  document.querySelectorAll<HTMLButtonElement>('.cite-copy').forEach((b) => {
+    b.addEventListener('click', async () => {
+      const p = b.closest('.cite-row')!.querySelector<HTMLElement>('.cite-text')!;
+      try {
+        if ('ClipboardItem' in window) {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'text/html': new Blob([p.innerHTML], { type: 'text/html' }),
+              'text/plain': new Blob([p.innerText], { type: 'text/plain' }),
+            }),
+          ]);
+        } else {
+          await navigator.clipboard.writeText(p.innerText);
+        }
+        b.textContent = 'Copied!';
+      } catch {
+        getSelection()?.selectAllChildren(p);
+        b.textContent = 'Selected: press Ctrl/Cmd+C';
+      }
+      setTimeout(() => (b.textContent = 'Copy'), 2000);
+    });
+  });
+</script>

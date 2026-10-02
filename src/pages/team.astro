@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Contact from '../components/Contact.astro';
+
+const years = (await getCollection('team')).sort((a, b) => b.data.term.localeCompare(a.data.term));
+const current = years[0];
+const past = years.slice(1);
+const groups = ['Faculty Advisor', 'Editorial Board', 'Team'] as const;
+const initials = (name: string) =>
+  name.replace(/[\[\]]/g, '').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || '?';
+---
+<Base title="Editorial Board" description="The people who make Episteme.">
+  <div class="wrap" style="padding-bottom:60px">
+    <div class="page-head">
+      <h1 class="page">Editorial Board</h1>
+      <p class="sub">The people who make Episteme{current ? `, ${current.data.term}` : ''}.</p>
+    </div>
+
+    {current && groups.map((g) => {
+      const members = current.data.members.filter((m) => m.group === g);
+      return members.length > 0 && (
+        <section class="team-group">
+          <h3>{g}</h3>
+          <div class:list={['team-grid', { lead: g === 'Faculty Advisor' }]}>
+            {members.map((m) => (
+              <article class="member">
+                <div class="avatar">{m.photo ? <img src={m.photo} alt="" loading="lazy"> : initials(m.name)}</div>
+                <div>
+                  <div class="role">{m.role}</div>
+                  <h4>{m.name}</h4>
+                  {m.bio && <p>{m.bio}</p>}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      );
+    })}
+
+    {past.length > 0 && (
+      <section class="team-group">
+        <h3>Past editorial boards</h3>
+        <div class="past">
+          {past.map((y) => (
+            <details>
+              <summary>{y.data.term}</summary>
+              <ul>{y.data.members.map((m) => <li>{m.name} <span>· {m.role}</span></li>)}</ul>
+            </details>
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+  <Contact />
+</Base>

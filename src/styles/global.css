@@ -35,6 +35,35 @@ a.res-card:hover{border-color:var(--accent)}
 .res-card .prose ol,.res-card .prose ul{margin-bottom:0}
 .res-card .go{display:inline-block;margin-top:12px;font:600 12px 'Inter',sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
 
+/* team */
+.team-group{margin-top:34px}
+.team-group h3{font:600 12px 'Inter',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.team-grid.lead{grid-template-columns:1fr}
+.member{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1px solid var(--rule);padding:20px}
+.avatar{flex:0 0 64px;width:64px;height:64px;border-radius:50%;background:var(--accent);color:var(--paper);display:grid;place-items:center;font:700 22px 'Playfair Display',serif;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.member .role{font:600 11px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.member h4{font:700 20px/1.25 'Playfair Display',serif;margin:2px 0 4px}
+.member p{font-size:15.5px;color:#4a443a}
+.past{margin-top:16px;border-top:1px solid var(--rule)}
+.past details{border-bottom:1px solid var(--rule);padding:14px 0}
+.past summary{cursor:pointer;font:700 20px 'Playfair Display',serif}
+.past ul{list-style:none;margin-top:10px;display:grid;grid-template-columns:repeat(2,1fr);gap:6px 30px;font-size:16px}
+.past li span{color:var(--muted)}
+
+/* cite this post */
+.cite{margin:0 0 30px;border-bottom:1px solid var(--rule);padding-bottom:18px}
+.cite summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px}
+.cite summary::-webkit-details-marker{display:none}
+.cite summary::after{content:"+";font:600 16px 'Inter',sans-serif;color:var(--accent)}
+.cite[open] summary::after{content:"−"}
+.cite-row{margin-top:16px;background:var(--card);border:1px solid var(--rule);padding:16px 18px}
+.cite-head{display:flex;justify-content:space-between;align-items:center;font:600 12px 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.cite-copy{font:600 11px 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+.cite-copy:hover{background:var(--ink);color:var(--paper)}
+.cite-text{font-size:16px;line-height:1.6;padding-left:2em;text-indent:-2em;overflow-wrap:anywhere}
+
 /* shared */
 .kicker{font:600 12px 'Inter',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
 .btn{display:inline-block;margin-top:22px;padding:12px 22px;background:var(--accent);color:#fff;font:600 13px 'Inter',sans-serif;letter-spacing:.08em;text-transform:uppercase}
@@ -160,7 +189,7 @@ footer.site .soc a:hover{color:#f2c7cd}
 .prose sup a{color:var(--accent);border:0;padding:0 1px}
 .prose section[data-footnotes]{border-top:1px solid var(--rule);margin-top:2.4em;padding-top:1em;font-size:15.5px;color:#4a443a}
 .prose section[data-footnotes] h2{font:600 12px 'Inter',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 .6em}
-.share{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:40px 0 20px;padding:18px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.share{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:40px 0 0;padding:18px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
 .share a,.share button{font:600 12px 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:7px 12px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
 .share a:hover,.share button:hover{background:var(--ink);color:var(--paper)}
 
@@ -192,7 +221,7 @@ footer.site .soc a:hover{color:#f2c7cd}
   .contact-grid{grid-template-columns:1fr;gap:44px}
   .contact-grid>div{padding:0}
   .contact-grid>div+div{border-left:0;border-top:1px solid #3a342c;padding-top:40px}
-  .posts.three,.res-grid{grid-template-columns:1fr}
+  .posts.three,.res-grid,.team-grid,.past ul{grid-template-columns:1fr}
   .hero,.about,.issue-top{grid-template-columns:1fr}
   .featured,.events{grid-template-columns:1fr}
   .editions{grid-template-columns:repeat(2,1fr)}

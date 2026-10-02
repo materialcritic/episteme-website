@@ -73,6 +73,24 @@ const resources = defineCollection({
   }),
 });
 
+// Editorial board: one file per academic year (e.g. 2026-27.yml). The newest year is shown as the
+// current team; earlier years stay on the page as past boards.
+const team = defineCollection({
+  loader: glob({ pattern: '**/*.{yml,yaml}', base: './src/content/team' }),
+  schema: z.object({
+    term: z.string(),
+    members: z.array(
+      z.object({
+        name: z.string(),
+        role: z.string(),
+        group: z.enum(['Faculty Advisor', 'Editorial Board', 'Team']).default('Editorial Board'),
+        photo: z.string().optional(),
+        bio: z.string().optional(),
+      }),
+    ),
+  }),
+});
+
 const pages = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
   schema: z.object({
@@ -81,4 +99,4 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { issues, posts, featured, events, resources, pages };
+export const collections = { issues, posts, featured, events, resources, team, pages };

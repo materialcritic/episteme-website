@@ -29,7 +29,7 @@ collections:
     fields:
       - { label: Title, name: title, widget: string }
       - { label: Date, name: date, widget: datetime, time_picker: false, date_format: "YYYY-MM-DD", format: "YYYY-MM-DD" }
-      - { label: Author, name: author, widget: string, hint: "Name shown in the byline" }
+      - { label: Author, name: author, widget: string, hint: "Full name as First Last. For two authors: First Last and First Last. Used for the byline and the APA/MLA citations." }
       - { label: Summary, name: summary, widget: text, hint: "1–2 sentences, shown on the blog list and in search" }
       - { label: Tags, name: tags, widget: list, required: false, hint: "e.g. Political Theory, Interview. Reuse existing spellings." }
       - { label: Cover image, name: cover, widget: image, required: false }
@@ -99,6 +99,29 @@ collections:
       - { label: Link, name: link, widget: string, required: false, hint: "Link to the book, an article, or a PDF of the course outline" }
       - { label: Order (1 shows first), name: order, widget: number, value_type: int, default: 10 }
       - { label: Details (for reading lists: the list of texts), name: body, widget: markdown, required: false }
+
+  - name: team
+    label: Editorial board
+    label_singular: Year
+    folder: src/content/team
+    extension: yml
+    format: yaml
+    create: true
+    slug: "{{fields.term}}"
+    summary: "{{term}}"
+    description: "One entry per academic year. For a new board, create a new year rather than editing the old one, so past boards stay on the site."
+    fields:
+      - { label: Academic year, name: term, widget: string, hint: "e.g. 2027–28" }
+      - label: Members
+        name: members
+        widget: list
+        summary: "{{fields.role}}: {{fields.name}}"
+        fields:
+          - { label: Name, name: name, widget: string }
+          - { label: Role, name: role, widget: string, hint: "e.g. Editor-in-Chief, Associate Editor" }
+          - { label: Group, name: group, widget: select, options: ["Faculty Advisor", "Editorial Board", "Team"], default: "Editorial Board" }
+          - { label: Photo, name: photo, widget: image, required: false }
+          - { label: Short bio, name: bio, widget: text, required: false }
 
   - name: pages
     label: Pages

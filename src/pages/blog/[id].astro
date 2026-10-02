@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import PostCard from '../../components/PostCard.astro';
 import ShareButtons from '../../components/ShareButtons.astro';
+import CiteThis from '../../components/CiteThis.astro';
 import Contact from '../../components/Contact.astro';
 import { getPosts, fullDate, readingTime, relatedPosts, slugifyTag } from '../../lib/content';
 
@@ -27,7 +28,10 @@ const related = relatedPosts(post, posts);
     </header>
     {d.cover && <img class="post-cover" src={d.cover} alt={d.coverAlt ?? ''}>}
     <div class="prose narrow"><Content /></div>
-    <div class="narrow"><ShareButtons title={d.title} path={`/blog/${post.id}/`} /></div>
+    <div class="narrow">
+      <ShareButtons title={d.title} path={`/blog/${post.id}/`} />
+      <CiteThis title={d.title} author={d.author} date={d.date} path={`/blog/${post.id}/`} />
+    </div>
   </article>
 
   {related.length > 0 && (

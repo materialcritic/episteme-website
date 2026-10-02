@@ -58,10 +58,12 @@ export function plainText(md = '') {
     .trim();
 }
 
+// Dates in content are plain days (2026-03-12), stored as UTC midnight; format them in UTC
+// so they never shift a day depending on where the site is built.
 export const monthYear = (d?: Date) =>
-  d ? d.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) : '';
+  d ? d.toLocaleDateString('en-IN', { month: 'long', year: 'numeric', timeZone: 'UTC' }) : '';
 
 export const fullDate = (d: Date) =>
-  d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+  d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 
 export const pad = (n: number) => String(n).padStart(2, '0');
