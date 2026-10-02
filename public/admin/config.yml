@@ -42,7 +42,7 @@ collections:
     folder: src/content/issues
     extension: md
     create: true
-    slug: "issue-{{number}}"
+    slug: "issue-{{fields.number}}"
     summary: "Issue {{number}} · {{title}}"
     fields:
       - { label: Issue number, name: number, widget: number, value_type: int }

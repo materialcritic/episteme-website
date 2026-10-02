@@ -63,6 +63,10 @@ Total: about ₹400–600/yr without paid email, or about ₹1,500–3,000/yr wi
 - **Resources** (`/resources/`, after Submit in the nav): reading lists, book suggestions and course outlines, from the `resources` collection (`src/content/resources/`, editable in the panel). Currently placeholder entries only.
 - **Newsletter:** signup box in the footer band of every page. Until a provider form URL is set in `src/config.ts` (`SITE.newsletter.action`; Buttondown, MailerLite or Brevo) it shows a working "Subscribe by email" button that emails the editors.
 - **Issue cards** show the cover plus issue number, month and year, and title. Covers will be supplied by the user later.
+- **Animations:** masthead fade-in; sections and cards fade up as they scroll into view (scroll-position based, not IntersectionObserver, which failed on pages opened through view transitions); hover lift on cards and covers; animated nav underline; cross-page fade (CSS view transitions); reading-progress bar on blog posts. All motion is off for users with "reduce motion" set, and nothing is hidden if JavaScript fails.
+- **Phone menu:** under 820px the nav collapses behind a "Menu" button.
+- **SEO and ops:** sitemap (`/sitemap-index.xml`), `robots.txt` (blocks `/admin/`), canonical and Open Graph tags, blog RSS feed (`/rss.xml`, also usable by newsletter tools to email new posts), Cloudflare `_headers` (security headers, long cache for built assets), Node pinned with `.nvmrc` and `engines`, Decap CMS pinned to 3.16.3.
+- **Daily rebuild:** `.github/workflows/daily-rebuild.yml` triggers a Cloudflare deploy hook every morning (06:00 IST) so events move from Upcoming to Past automatically. Needs a `CF_DEPLOY_HOOK` repo secret; it skips quietly until that is set.
 - Other pages: Home (latest issue, Featured, From the Blog, Issues, In the Department, About teaser), About, In the Department (events), Reach Out, 404.
 
 ### Editing workflow (decided with the user)

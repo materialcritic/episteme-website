@@ -36,6 +36,7 @@ const tags = [...counts.entries()].sort((a, b) => a[1].name.localeCompare(b[1].n
       </div>
     )}
 
+    <h2 class="sr">Posts</h2>
     <p class="count" id="count" aria-live="polite"></p>
     <div class="posts" id="posts">
       {posts.map((p) => <PostCard post={p} />)}
@@ -58,16 +59,26 @@ const tags = [...counts.entries()].sort((a, b) => a[1].name.localeCompare(b[1].n
   let index: { id: string; text: string }[] | null = null;
   let timer: number | undefined;
 
+  // Full-text index, fetched on first use. If it can't load, search falls back to titles.
   async function loadIndex() {
-    if (!index) index = await (await fetch('/blog/search-index.json')).json();
+    if (!index) {
+      try {
+        index = await (await fetch('/blog/search-index.json')).json();
+      } catch {
+        index = cards.map((c) => ({ id: c.dataset.id!, text: c.dataset.title ?? '' }));
+      }
+    }
     return index!;
   }
+  let run = 0;
 
   async function apply() {
+    const mine = ++run;
     const terms = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
     let hits: Set<string> | null = null;
     if (terms.length) {
       const idx = await loadIndex();
+      if (mine !== run) return; // a newer keystroke already started
       hits = new Set(idx.filter((p) => terms.every((t) => p.text.includes(t))).map((p) => p.id));
     }
     let shown = 0;
@@ -82,6 +93,7 @@ const tags = [...counts.entries()].sort((a, b) => a[1].name.localeCompare(b[1].n
       .sort((a, b) => dir * (Date.parse(a.dataset.date!) - Date.parse(b.dataset.date!)))
       .forEach((c) => list.appendChild(c));
     none.hidden = shown > 0 || cards.length === 0;
+    dispatchEvent(new Event('reveal:check'));
     count.textContent = terms.length || tag ? `${shown} of ${cards.length} posts` : '';
 
     tagbar?.querySelectorAll<HTMLButtonElement>('button').forEach((b) =>

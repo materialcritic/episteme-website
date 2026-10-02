@@ -15,7 +15,7 @@ const { Content } = await render(post);
 const d = post.data;
 const related = relatedPosts(post, posts);
 ---
-<Base title={d.title} description={d.summary}>
+<Base title={d.title} description={d.summary} progress>
   <article class="wrap post-page">
     <header class="post-head">
       <a class="kicker" href="/blog/">← Blog</a>
