@@ -5,6 +5,10 @@ export const SITE = {
   dept: 'Department of Political Science · Jamia Millia Islamia',
   email: 'editor@epistemejamia.in',
   url: 'https://epistemejamia.in',
+  // Newsletter signup. Until `action` is set, the box shows a "Subscribe by email" button instead.
+  // To go live: create a free list at Buttondown/MailerLite/Brevo and paste its form URL below.
+  // Buttondown: https://buttondown.com/api/emails/embed-subscribe/YOUR-USERNAME (field name "email").
+  newsletter: { action: '', emailField: 'email' },
   // Replace each "#" with the real profile URL. Entries left as "#" are hidden.
   social: [
     { label: 'Instagram', href: '#' },

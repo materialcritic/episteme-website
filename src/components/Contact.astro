@@ -1,8 +1,26 @@
 ---
 import { SITE } from '../config';
+
+const nl = SITE.newsletter;
+const subscribeMail = `mailto:${SITE.email}?subject=${encodeURIComponent('Subscribe me to Episteme')}&body=${encodeURIComponent('Please add me to the Episteme mailing list.')}`;
 ---
-<section class="contact" id="contact"><div class="wrap">
-  <h2>Reach Out to Us</h2>
-  <p class="sub">Queries, suggestions or submissions. We'd love to hear from you.</p>
-  <a class="mail" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+<section class="contact" id="contact"><div class="wrap contact-grid">
+  <div>
+    <h2>Reach Out to Us</h2>
+    <p class="sub">Queries, suggestions or submissions. We'd love to hear from you.</p>
+    <a class="mail" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+  </div>
+  <div id="subscribe">
+    <h2>Stay in the Loop</h2>
+    <p class="sub">New issues and posts, straight to your inbox.</p>
+    {nl.action ? (
+      <form class="nl" action={nl.action} method="post" target="_blank">
+        <label class="sr" for="nl-email">Email address</label>
+        <input id="nl-email" type="email" name={nl.emailField} required placeholder="you@example.com" autocomplete="email">
+        <button type="submit">Subscribe</button>
+      </form>
+    ) : (
+      <a class="btn" href={subscribeMail}>Subscribe by email</a>
+    )}
+  </div>
 </div></section>

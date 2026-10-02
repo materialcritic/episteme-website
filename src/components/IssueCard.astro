@@ -1,22 +1,31 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import IssueCover from './IssueCover.astro';
-import { monthYear } from '../lib/content';
+import { monthYear, pad } from '../lib/content';
 
 interface Props {
   issue: CollectionEntry<'issues'>;
 }
 const { issue } = Astro.props;
-const { pdf, date } = issue.data;
+const { pdf, date, number, title } = issue.data;
+const when = monthYear(date);
 ---
 {pdf ? (
-  <a class="ed" href={pdf} target="_blank" rel="noopener" aria-label={`Open issue ${issue.data.number} (PDF, opens in a new tab)`}>
+  <a class="ed" href={pdf} target="_blank" rel="noopener" aria-label={`Open issue ${number}, ${title} (PDF, opens in a new tab)`}>
     <IssueCover issue={issue} />
-    <p>{monthYear(date)}{date ? ' · ' : ''}Read PDF ↗</p>
+    <p class="cap">
+      <span class="k">Issue {pad(number)}{when ? ` · ${when}` : ''}</span>
+      <span class="t">{title}</span>
+      Read PDF ↗
+    </p>
   </a>
 ) : (
   <div class="ed">
     <IssueCover issue={issue} />
-    <p>{monthYear(date)}{date ? ' · ' : ''}PDF coming soon</p>
+    <p class="cap">
+      <span class="k">Issue {pad(number)}{when ? ` · ${when}` : ''}</span>
+      <span class="t">{title}</span>
+      PDF coming soon
+    </p>
   </div>
 )}

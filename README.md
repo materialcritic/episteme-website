@@ -59,6 +59,9 @@ Total: about ₹400–600/yr without paid email, or about ₹1,500–3,000/yr wi
 - **Issues** (`/issues/`): a grid of cover thumbnails of all past issues. Clicking a cover **opens the issue PDF in a new tab**. An issue with no PDF yet shows "PDF coming soon". There are no per-issue pages and no web version of issues.
 - **Blog** (`/blog/`): posts are **text hosted on the site (no PDFs)**. The list can be **sorted by date** (newest/oldest), **filtered by tag**, and **searched** (full text: title, author, tags, summary and body). Tag, search and sort state is kept in the URL (`/blog/?tag=interview&q=...`).
 - **Posts** have a byline, date, reading time, tags, optional cover image, **footnotes** (`[^1]`), **pull-quotes** (blockquotes), **embedded video/podcast** (YouTube/Spotify via an editor-panel component), **share buttons** (WhatsApp, X, LinkedIn, Facebook, Email, Copy link; no comments) and **related posts** (by shared tags).
+- **Submit** (`/submit/`): submission guidelines for the blog (3,000-4,000 words, APA 7 citations, email to the editors, what to send). Text is editable in the editor panel (Pages > Submission guidelines); the reply-time figure is a `[number]` placeholder.
+- **Newsletter:** signup box in the footer band of every page. Until a provider form URL is set in `src/config.ts` (`SITE.newsletter.action`; Buttondown, MailerLite or Brevo) it shows a working "Subscribe by email" button that emails the editors.
+- **Issue cards** show the cover plus issue number, month and year, and title. Covers will be supplied by the user later.
 - Other pages: Home (latest issue, Featured, From the Blog, Issues, In the Department, About teaser), About, In the Department (events), Reach Out, 404.
 
 ### Editing workflow (decided with the user)
@@ -90,22 +93,18 @@ Run it: `npm install`, then `npm run dev` (http://localhost:4321) or `npm run bu
 - **Issue thumbnails:** currently the cover image if provided, else a coloured placeholder cover. Auto-generating a thumbnail from each PDF's first page is not built yet (default offered to the user; not yet confirmed).
 - Real content, logo, social handles, email DNS (SPF/DKIM/DMARC), pagination for a very long blog list.
 
-## 5. Open questions and next steps
-Answered by the user: university (Jamia Millia Islamia); design (A); issues are PDF-only, opened in a new tab; blog is text-only with sort, tags, search; editors post everything, with draft/preview/publish; tags only (no categories); footnotes, pull-quotes, embeds; reading time and related posts; share buttons yes, comments no; byline only (no author pages, chosen by Claude).
+## 5. Decisions and next steps
+**Answered by the user:** university Jamia Millia Islamia; design A; issues are PDF-only, opened in a new tab, thumbnails show number + month/year + title, cover images to be supplied later, about 4-5 issues (PDFs can live in `public/uploads/` in the repo while each is under 25 MB); blog is text-only, English only, with sort/tags/search; editors post everything with draft/preview/publish; tags only; footnotes, pull-quotes, embeds; reading time and related posts; share buttons yes, comments no; Featured and In the Department kept, Featured links to posts (Claude's choice); submissions by email with guidelines; newsletter yes; permission to host outside contributors' work (e.g. Dr. Pogge) confirmed; default wordmark logo for now; **launch ASAP**.
 
-**Still to ask or confirm:**
-1. Do cover images exist for each issue, or should thumbnails be generated from each PDF's first page (default)?
-2. How many past issues exist and how large are the PDFs (repo vs. Cloudflare R2)?
-3. What each issue thumbnail should show (default: number, month and year, title).
-4. Language: English only (default), or Hindi/Urdu too (needs right-to-left support and fonts)?
-5. Keep Featured and In the Department; should Featured link to blog posts (default: yes)?
-6. How to submit: email (default) or a Google Form link.
-7. Permission to host outside contributors' work (e.g. Dr. Pogge).
-8. Newsletter box (default: skip); logo (default: keep the wordmark and maroon); launch deadline.
-9. Real content: About text, advisor's name, issue PDFs and titles, event photos and captions, social handles.
-10. Confirm the domain and Spacemail purchases are done.
+**Still to do (in order):**
+1. User creates the accounts (Cloudflare; GitHub ownership under a department account later) and deploys: Cloudflare Pages, connect the GitHub repo, build command `npm run build`, output `dist`, env var `NODE_VERSION=22.12.0` (Astro 7 needs Node >= 22.12).
+2. Add the domain to Cloudflare and point the Spaceship nameservers at it; attach `epistemejamia.in` to the Pages project.
+3. Editor-panel login: deploy a GitHub OAuth proxy (Cloudflare Worker), set `base_url` in `public/admin/config.yml`, then test the draft workflow, live preview and embeds.
+4. Email: Spacemail DNS records (MX, SPF, DKIM, DMARC) in Cloudflare, forwarding to Gmail and Gmail "Send mail as"; test both ways.
+5. Newsletter provider and its form URL; social handles; About text; real issues (PDFs and covers); event content; remove the placeholder posts, issues and events.
+6. Handover document: logins, how to publish a post and an issue, who renews the domain and email, and when.
 
-**Next technical steps:** create the GitHub and Cloudflare accounts under the department email with 2FA; deploy to Cloudflare Pages; add the domain to Cloudflare and point the nameservers; connect the domain; set up the editor-panel OAuth login and test the editorial workflow and previews; set up email forwarding and DNS (SPF/DKIM/DMARC), test both ways; write a handover doc (logins, how to publish an issue and a post, who renews the domain and when).
+**Open:** has the user bought `epistemejamia.in` and Spacemail yet? Real About text and advisor name. Submission reply time.
 
 ## 6. Working notes for the next Claude
 - The user wants to be guided step by step and is building the site with Claude only.

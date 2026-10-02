@@ -93,3 +93,9 @@ collections:
           - { label: Title, name: title, widget: string }
           - { label: Pull quote, name: pullQuote, widget: string, required: false }
           - { label: Body, name: body, widget: markdown }
+      - label: Submission guidelines
+        name: submit
+        file: src/content/pages/submit.md
+        fields:
+          - { label: Title, name: title, widget: string }
+          - { label: Body, name: body, widget: markdown }

@@ -1,0 +1,18 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Contact from '../components/Contact.astro';
+import { SITE } from '../config';
+
+const page = await getEntry('pages', 'submit');
+if (!page) throw new Error('Missing src/content/pages/submit.md');
+const { Content } = await render(page);
+---
+<Base title="Submit" description="How to submit your writing to the Episteme blog: length, citation style and what to send.">
+  <div class="wrap">
+    <div class="page-head"><h1 class="page">{page.data.title}</h1></div>
+    <div class="prose narrow" style="padding:10px 0 20px"><Content /></div>
+    <p style="padding-bottom:60px"><a class="btn" href={`mailto:${SITE.email}?subject=${encodeURIComponent('Submission: [your title]')}`}>Email your submission</a></p>
+  </div>
+  <Contact />
+</Base>
