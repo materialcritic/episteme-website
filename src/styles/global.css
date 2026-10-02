@@ -46,11 +46,6 @@ a.res-card:hover{border-color:var(--accent)}
 .member .role{font:600 11px 'Inter',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
 .member h4{font:700 20px/1.25 'Playfair Display',serif;margin:2px 0 4px}
 .member p{font-size:15.5px;color:#4a443a}
-.past{margin-top:16px;border-top:1px solid var(--rule)}
-.past details{border-bottom:1px solid var(--rule);padding:14px 0}
-.past summary{cursor:pointer;font:700 20px 'Playfair Display',serif}
-.past ul{list-style:none;margin-top:10px;display:grid;grid-template-columns:repeat(2,1fr);gap:6px 30px;font-size:16px}
-.past li span{color:var(--muted)}
 
 /* cite this post */
 .cite{margin:0 0 30px;border-bottom:1px solid var(--rule);padding-bottom:18px}
@@ -221,7 +216,7 @@ footer.site .soc a:hover{color:#f2c7cd}
   .contact-grid{grid-template-columns:1fr;gap:44px}
   .contact-grid>div{padding:0}
   .contact-grid>div+div{border-left:0;border-top:1px solid #3a342c;padding-top:40px}
-  .posts.three,.res-grid,.team-grid,.past ul{grid-template-columns:1fr}
+  .posts.three,.res-grid,.team-grid{grid-template-columns:1fr}
   .hero,.about,.issue-top{grid-template-columns:1fr}
   .featured,.events{grid-template-columns:1fr}
   .editions{grid-template-columns:repeat(2,1fr)}

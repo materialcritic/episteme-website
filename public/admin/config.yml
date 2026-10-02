@@ -109,7 +109,7 @@ collections:
     create: true
     slug: "{{fields.term}}"
     summary: "{{term}}"
-    description: "One entry per academic year. For a new board, create a new year rather than editing the old one, so past boards stay on the site."
+    description: "One entry per academic year. Only the newest year is shown on the Team page. For a new board, create a new year rather than editing the old one, so the earlier board is kept as a record."
     fields:
       - { label: Academic year, name: term, widget: string, hint: "e.g. 2027–28" }
       - label: Members
