@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "predev": "node scripts/sync-preview-css.mjs",
+    "prebuild": "node scripts/sync-preview-css.mjs"
   },
   "repository": {
     "type": "git",

@@ -2,16 +2,20 @@
 import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import IssueCover from '../components/IssueCover.astro';
+import IssueCard from '../components/IssueCard.astro';
+import PostCard from '../components/PostCard.astro';
 import EventCard from '../components/EventCard.astro';
 import Contact from '../components/Contact.astro';
-import { getIssues, getFeatured, getEvents, monthYear, pad } from '../lib/content';
+import { getIssues, getPosts, getFeatured, getEvents, pad } from '../lib/content';
 
 const issues = await getIssues();
 const latest = issues[0];
+const posts = (await getPosts()).slice(0, 3);
 const featured = (await getFeatured()).slice(0, 3);
 const events = (await getEvents()).slice(0, 3);
 const about = await getEntry('pages', 'about');
-const issueHref = (i: (typeof issues)[number]) => `/editions/${i.id}/`;
+const latestHref = latest?.data.pdf ?? '/issues/';
+const latestNew = Boolean(latest?.data.pdf);
 ---
 <Base>
   <div class="wrap">
@@ -21,15 +25,20 @@ const issueHref = (i: (typeof issues)[number]) => `/editions/${i.id}/`;
           <div class="kicker">Latest Issue</div>
           <h1>Ideas, arguments and inquiry from the Department of Political Science</h1>
           <p>{latest.data.summary ?? 'Episteme brings together essays, interviews and scholarship on politics, justice and society.'}</p>
-          <a class="btn" href={issueHref(latest)}>Read Issue {pad(latest.data.number)}</a>
+          <a class="btn" href={latestHref} target={latestNew ? '_blank' : undefined} rel={latestNew ? 'noopener' : undefined}>
+            Read Issue {pad(latest.data.number)}{latestNew ? ' ↗' : ''}
+          </a>
+          <a class="btn ghost" style="margin-left:10px" href="/blog/">Read the blog</a>
         </div>
-        <a href={issueHref(latest)} aria-label={`Open issue ${latest.data.number}`}><IssueCover issue={latest} hero /></a>
+        <a href={latestHref} target={latestNew ? '_blank' : undefined} rel={latestNew ? 'noopener' : undefined} aria-label={`Open issue ${latest.data.number}`}>
+          <IssueCover issue={latest} hero />
+        </a>
       </div>
     )}
 
     {featured.length > 0 && (
       <section class="block" id="featured">
-        <h2>Featured</h2><p class="sub">Selected work from our editions.</p>
+        <h2>Featured</h2><p class="sub">Selected work from Episteme.</p>
         <div class="featured">
           {featured.map((f) => {
             const Tag = f.data.link ? 'a' : 'div';
@@ -45,29 +54,20 @@ const issueHref = (i: (typeof issues)[number]) => `/editions/${i.id}/`;
       </section>
     )}
 
-    {about && (
-      <section class="block about" id="about">
-        {about.data.pullQuote && <blockquote>“{about.data.pullQuote}”</blockquote>}
-        <div>
-          <h2>About Us</h2>
-          <p>How Episteme began, who guides it, and what we publish.</p>
-          <a class="more" href="/about/">Read our story</a>
-        </div>
+    {posts.length > 0 && (
+      <section class="block" id="blog">
+        <h2>From the Blog</h2><p class="sub">Latest essays, interviews and commentary.</p>
+        <div class="posts three">{posts.map((p) => <PostCard post={p} />)}</div>
+        <a class="more" href="/blog/">All posts</a>
       </section>
     )}
 
-    <section class="block" id="editions">
-      <h2>Past Editions</h2><p class="sub">Every issue of Episteme, in one place.</p>
+    <section class="block" id="issues">
+      <h2>Issues</h2><p class="sub">Every issue of Episteme. Click a cover to read the PDF.</p>
       <div class="editions">
-        {issues.slice(0, 3).map((i) => (
-          <a class="ed" href={issueHref(i)}>
-            <IssueCover issue={i} />
-            <p>{monthYear(i.data.date)}{i.data.pdf ? ' · PDF' : ''}</p>
-          </a>
-        ))}
-        <div class="ed soon"><div class="cover"><b>More coming soon</b></div><p>&nbsp;</p></div>
+        {issues.slice(0, 4).map((i) => <IssueCard issue={i} />)}
       </div>
-      <a class="more" href="/editions/">View all editions</a>
+      <a class="more" href="/issues/">All issues</a>
     </section>
 
     {events.length > 0 && (
@@ -77,6 +77,17 @@ const issueHref = (i: (typeof issues)[number]) => `/editions/${i.id}/`;
           {events.map((e) => <EventCard event={e.entry} upcoming={e.upcoming} />)}
         </div>
         <a class="more" href="/department/">All events</a>
+      </section>
+    )}
+
+    {about && (
+      <section class="block about" id="about" style="border-bottom:0">
+        {about.data.pullQuote && <blockquote>“{about.data.pullQuote}”</blockquote>}
+        <div>
+          <h2>About Us</h2>
+          <p>How Episteme began, who guides it, and what we publish.</p>
+          <a class="more" href="/about/">Read our story</a>
+        </div>
       </section>
     )}
   </div>

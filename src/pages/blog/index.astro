@@ -1,0 +1,116 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import Contact from '../../components/Contact.astro';
+import { getPosts, slugifyTag } from '../../lib/content';
+
+const posts = await getPosts();
+const counts = new Map<string, { name: string; n: number }>();
+for (const p of posts) {
+  for (const t of p.data.tags) {
+    const slug = slugifyTag(t);
+    counts.set(slug, { name: counts.get(slug)?.name ?? t, n: (counts.get(slug)?.n ?? 0) + 1 });
+  }
+}
+const tags = [...counts.entries()].sort((a, b) => a[1].name.localeCompare(b[1].name));
+---
+<Base title="Blog" description="Essays, interviews and commentary from the Episteme community.">
+  <div class="wrap">
+    <div class="page-head">
+      <h1 class="page">Blog</h1>
+      <p class="sub">Essays, interviews and commentary from the Episteme community.</p>
+    </div>
+
+    <div class="blog-tools" role="search">
+      <input id="q" type="search" placeholder="Search posts by title, author, tag or text…" aria-label="Search posts" autocomplete="off">
+      <select id="sort" aria-label="Sort posts">
+        <option value="new">Newest first</option>
+        <option value="old">Oldest first</option>
+      </select>
+    </div>
+
+    {tags.length > 0 && (
+      <div class="tagbar" id="tagbar" aria-label="Filter by tag">
+        <button type="button" data-tag="" aria-pressed="true">All</button>
+        {tags.map(([slug, t]) => <button type="button" data-tag={slug} aria-pressed="false">{t.name} <span>{t.n}</span></button>)}
+      </div>
+    )}
+
+    <p class="count" id="count" aria-live="polite"></p>
+    <div class="posts" id="posts">
+      {posts.map((p) => <PostCard post={p} />)}
+    </div>
+    <p class="sub" id="none" hidden>No posts match your search. Try a different word or clear the filters.</p>
+    {posts.length === 0 && <p class="sub">No posts yet. Check back soon.</p>}
+  </div>
+  <Contact />
+</Base>
+
+<script>
+  const q = document.getElementById('q') as HTMLInputElement;
+  const sort = document.getElementById('sort') as HTMLSelectElement;
+  const list = document.getElementById('posts')!;
+  const none = document.getElementById('none')!;
+  const count = document.getElementById('count')!;
+  const tagbar = document.getElementById('tagbar');
+  const cards = [...list.querySelectorAll<HTMLElement>('.post')];
+  let tag = '';
+  let index: { id: string; text: string }[] | null = null;
+  let timer: number | undefined;
+
+  async function loadIndex() {
+    if (!index) index = await (await fetch('/blog/search-index.json')).json();
+    return index!;
+  }
+
+  async function apply() {
+    const terms = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    let hits: Set<string> | null = null;
+    if (terms.length) {
+      const idx = await loadIndex();
+      hits = new Set(idx.filter((p) => terms.every((t) => p.text.includes(t))).map((p) => p.id));
+    }
+    let shown = 0;
+    for (const c of cards) {
+      const okTag = !tag || (c.dataset.tags ?? '').split(' ').includes(tag);
+      const okQ = !hits || hits.has(c.dataset.id!);
+      c.hidden = !(okTag && okQ);
+      if (!c.hidden) shown++;
+    }
+    const dir = sort.value === 'old' ? 1 : -1;
+    cards
+      .sort((a, b) => dir * (Date.parse(a.dataset.date!) - Date.parse(b.dataset.date!)))
+      .forEach((c) => list.appendChild(c));
+    none.hidden = shown > 0 || cards.length === 0;
+    count.textContent = terms.length || tag ? `${shown} of ${cards.length} posts` : '';
+
+    tagbar?.querySelectorAll<HTMLButtonElement>('button').forEach((b) =>
+      b.setAttribute('aria-pressed', String(b.dataset.tag === tag)),
+    );
+    const params = new URLSearchParams();
+    if (tag) params.set('tag', tag);
+    if (q.value.trim()) params.set('q', q.value.trim());
+    if (sort.value === 'old') params.set('sort', 'old');
+    const qs = params.toString();
+    history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
+  }
+
+  q.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = window.setTimeout(apply, 150);
+  });
+  q.addEventListener('focus', () => void loadIndex(), { once: true });
+  sort.addEventListener('change', apply);
+  tagbar?.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-tag]');
+    if (!b) return;
+    tag = b.dataset.tag ?? '';
+    apply();
+  });
+
+  const params = new URLSearchParams(location.search);
+  tag = params.get('tag') ?? '';
+  q.value = params.get('q') ?? '';
+  sort.value = params.get('sort') === 'old' ? 'old' : 'new';
+  if (tag || q.value || sort.value === 'old') apply();
+</script>

@@ -1,0 +1,35 @@
+---
+interface Props {
+  title: string;
+  path: string;
+}
+const { title, path } = Astro.props;
+const url = new URL(path, Astro.site).toString();
+const u = encodeURIComponent(url);
+const t = encodeURIComponent(title);
+const links = [
+  ['WhatsApp', `https://wa.me/?text=${t}%20${u}`],
+  ['X', `https://twitter.com/intent/tweet?text=${t}&url=${u}`],
+  ['LinkedIn', `https://www.linkedin.com/sharing/share-offsite/?url=${u}`],
+  ['Facebook', `https://www.facebook.com/sharer/sharer.php?u=${u}`],
+  ['Email', `mailto:?subject=${t}&body=${u}`],
+];
+---
+<div class="share" aria-label="Share this post">
+  <span class="kicker">Share</span>
+  {links.map(([label, href]) => <a href={href} target="_blank" rel="noopener">{label}</a>)}
+  <button type="button" data-copy={url}>Copy link</button>
+</div>
+<script>
+  document.querySelectorAll<HTMLButtonElement>('button[data-copy]').forEach((b) => {
+    b.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(b.dataset.copy ?? '');
+        b.textContent = 'Copied!';
+        setTimeout(() => (b.textContent = 'Copy link'), 1800);
+      } catch {
+        b.textContent = 'Press Ctrl/Cmd+C';
+      }
+    });
+  });
+</script>

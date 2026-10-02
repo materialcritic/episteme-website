@@ -1,0 +1,42 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import ShareButtons from '../../components/ShareButtons.astro';
+import Contact from '../../components/Contact.astro';
+import { getPosts, fullDate, readingTime, relatedPosts, slugifyTag } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { id: post.id }, props: { post, posts } }));
+}
+const { post, posts } = Astro.props;
+const { Content } = await render(post);
+const d = post.data;
+const related = relatedPosts(post, posts);
+---
+<Base title={d.title} description={d.summary}>
+  <article class="wrap post-page">
+    <header class="post-head">
+      <a class="kicker" href="/blog/">← Blog</a>
+      <h1 class="page" style="margin-top:12px">{d.title}</h1>
+      <p class="by">By <strong>{d.author}</strong> · {fullDate(d.date)} · {readingTime(post.body)} min read</p>
+      {d.tags.length > 0 && (
+        <div class="tags">{d.tags.map((t) => <a class="tag" href={`/blog/?tag=${slugifyTag(t)}`}>{t}</a>)}</div>
+      )}
+    </header>
+    {d.cover && <img class="post-cover" src={d.cover} alt={d.coverAlt ?? ''}>}
+    <div class="prose narrow"><Content /></div>
+    <div class="narrow"><ShareButtons title={d.title} path={`/blog/${post.id}/`} /></div>
+  </article>
+
+  {related.length > 0 && (
+    <section class="block" style="border-bottom:0">
+      <div class="wrap">
+        <h2>Related posts</h2><div style="height:20px"></div>
+        <div class="posts">{related.map((p) => <PostCard post={p} />)}</div>
+      </div>
+    </section>
+  )}
+  <Contact />
+</Base>

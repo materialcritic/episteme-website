@@ -1,5 +1,5 @@
 # Editor panel (Decap CMS) at /admin/
-# Sign-in needs a GitHub OAuth proxy; see README "Editor panel setup".
+# Sign-in needs a GitHub OAuth proxy; see README "Not done yet".
 backend:
   name: github
   repo: materialcritic/episteme-website
@@ -9,26 +9,50 @@ backend:
 # Uncomment to test the panel locally: run `npx decap-server` next to `npm run dev`.
 # local_backend: true
 
+# Draft -> In review -> Ready. Each draft lives on its own branch, so Cloudflare Pages builds a
+# full preview website for it before anything goes public. "Publish" merges it into the live site.
+publish_mode: editorial_workflow
+
 media_folder: public/uploads
 public_folder: /uploads
 
 collections:
+  - name: posts
+    label: Blog posts
+    label_singular: Blog post
+    folder: src/content/posts
+    extension: md
+    create: true
+    slug: "{{slug}}"
+    summary: "{{title}} · {{author}} · {{date}}"
+    sortable_fields: [date, title, author]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime, time_picker: false, date_format: "YYYY-MM-DD", format: "YYYY-MM-DD" }
+      - { label: Author, name: author, widget: string, hint: "Name shown in the byline" }
+      - { label: Summary, name: summary, widget: text, hint: "1–2 sentences, shown on the blog list and in search" }
+      - { label: Tags, name: tags, widget: list, required: false, hint: "e.g. Political Theory, Interview. Reuse existing spellings." }
+      - { label: Cover image, name: cover, widget: image, required: false }
+      - { label: Cover image description, name: coverAlt, widget: string, required: false, hint: "For screen readers" }
+      - { label: Post, name: body, widget: markdown, hint: "Footnotes: type [^1] where the note goes, then [^1]: the note text at the bottom (use the Markdown tab). Use the quote button for a pull-quote, and + > Embed for video or podcast." }
+
   - name: issues
     label: Issues
+    label_singular: Issue
     folder: src/content/issues
     extension: md
     create: true
     slug: "issue-{{number}}"
+    summary: "Issue {{number}} · {{title}}"
     fields:
       - { label: Issue number, name: number, widget: number, value_type: int }
       - { label: Title, name: title, widget: string }
       - { label: Date, name: date, widget: datetime, required: false, time_picker: false, date_format: "YYYY-MM-DD", format: "YYYY-MM-DD" }
       - { label: Summary, name: summary, widget: text, required: false }
-      - { label: Cover colour, name: color, widget: color, default: "#7a1f2b" }
-      - { label: Cover image, name: cover, widget: image, required: false }
-      - { label: PDF, name: pdf, widget: file, required: false }
-      - { label: Hide (draft), name: draft, widget: boolean, default: false }
-      - { label: Web version of the issue (optional), name: body, widget: markdown, required: false }
+      - { label: PDF, name: pdf, widget: file, required: false, hint: "Opens in a new tab when readers click the cover" }
+      - { label: Cover image, name: cover, widget: image, required: false, hint: "Front page of the issue. Without it a coloured cover is shown." }
+      - { label: Cover colour (used without an image), name: color, widget: color, default: "#7a1f2b" }
+      - { label: Hide this issue, name: draft, widget: boolean, default: false }
 
   - name: featured
     label: Featured
@@ -42,7 +66,7 @@ collections:
       - { label: Affiliation, name: affiliation, widget: string, required: false }
       - { label: Type (e.g. Essay, Interview), name: kind, widget: string, default: Featured }
       - { label: Issue number, name: issue, widget: number, value_type: int, required: false }
-      - { label: Link, name: link, widget: string, required: false }
+      - { label: Link, name: link, widget: string, required: false, hint: "A blog post such as /blog/my-post/ or a PDF" }
       - { label: Order (1 shows first), name: order, widget: number, value_type: int, default: 10 }
 
   - name: events

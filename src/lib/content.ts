@@ -1,8 +1,13 @@
-import { getCollection } from 'astro:content';
+import { getCollection, type CollectionEntry } from 'astro:content';
 
 export async function getIssues() {
   const all = await getCollection('issues', (i) => !i.data.draft);
   return all.sort((a, b) => b.data.number - a.data.number);
+}
+
+export async function getPosts() {
+  const all = await getCollection('posts', (p) => !p.data.draft);
+  return all.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 }
 
 export async function getFeatured() {
@@ -16,10 +21,41 @@ export async function getEvents() {
   const all = await getCollection('events');
   const now = new Date();
   now.setHours(0, 0, 0, 0);
-  const events = all
+  return all
     .map((e) => ({ entry: e, upcoming: e.data.date >= now }))
     .sort((a, b) => b.entry.data.date.getTime() - a.entry.data.date.getTime());
-  return events;
+}
+
+export const slugifyTag = (t: string) =>
+  t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+export function readingTime(body = '') {
+  const words = body.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
+// Posts that share the most tags with `post`, newest first on ties.
+export function relatedPosts(post: CollectionEntry<'posts'>, all: CollectionEntry<'posts'>[], limit = 3) {
+  const mine = new Set(post.data.tags.map(slugifyTag));
+  return all
+    .filter((p) => p.id !== post.id)
+    .map((p) => ({ p, score: p.data.tags.filter((t) => mine.has(slugifyTag(t))).length }))
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score || b.p.data.date.getTime() - a.p.data.date.getTime())
+    .slice(0, limit)
+    .map((x) => x.p);
+}
+
+// Plain text of a markdown post, used by the blog search.
+export function plainText(md = '') {
+  return md
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\[\^[^\]]+\]:?/g, ' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+    .replace(/[#>*_`~|-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 export const monthYear = (d?: Date) =>

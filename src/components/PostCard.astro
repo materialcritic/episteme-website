@@ -1,0 +1,25 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { fullDate, readingTime, slugifyTag } from '../lib/content';
+
+interface Props {
+  post: CollectionEntry<'posts'>;
+}
+const { post } = Astro.props;
+const d = post.data;
+---
+<article
+  class="post"
+  data-id={post.id}
+  data-date={d.date.toISOString()}
+  data-title={d.title.toLowerCase()}
+  data-tags={d.tags.map(slugifyTag).join(' ')}
+>
+  <div class="meta">{fullDate(d.date)} · {readingTime(post.body)} min read</div>
+  <h3><a href={`/blog/${post.id}/`}>{d.title}</a></h3>
+  <p class="by">By {d.author}</p>
+  <p class="summary">{d.summary}</p>
+  {d.tags.length > 0 && (
+    <div class="tags">{d.tags.map((t) => <a class="tag" href={`/blog/?tag=${slugifyTag(t)}`}>{t}</a>)}</div>
+  )}
+</article>

@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import IssueCard from '../../components/IssueCard.astro';
+import Contact from '../../components/Contact.astro';
+import { getIssues } from '../../lib/content';
+
+const issues = await getIssues();
+---
+<Base title="Issues" description="Every issue of Episteme. Click a cover to read the PDF.">
+  <div class="wrap">
+    <div class="page-head">
+      <h1 class="page">Issues</h1>
+      <p class="sub">Every issue of Episteme, newest first. Click a cover to read the PDF.</p>
+    </div>
+    <div class="editions" style="padding:10px 0 70px">
+      {issues.map((i) => <IssueCard issue={i} />)}
+    </div>
+  </div>
+  <Contact />
+</Base>

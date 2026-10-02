@@ -53,42 +53,59 @@ Total: about ₹400–600/yr without paid email, or about ₹1,500–3,000/yr wi
 6. Optional **Featured** section: selected work, e.g. the last issue featured work by **Dr. Pogge from Yale**, plus other notable articles from earlier editions.
 
 ## 4. What has been built (current state)
-**Design A (Classic Journal) was chosen** and built as a real **Astro 7** static site in this repo. The three original HTML mockups are kept for reference in `reference/`.
+**Design A (Classic Journal)** is built as a real **Astro 7** static site in this repo. The three original HTML mockups are kept in `reference/`. University: **Jamia Millia Islamia** (confirmed by the user).
+
+### Site structure (decided with the user)
+- **Issues** (`/issues/`): a grid of cover thumbnails of all past issues. Clicking a cover **opens the issue PDF in a new tab**. An issue with no PDF yet shows "PDF coming soon". There are no per-issue pages and no web version of issues.
+- **Blog** (`/blog/`): posts are **text hosted on the site (no PDFs)**. The list can be **sorted by date** (newest/oldest), **filtered by tag**, and **searched** (full text: title, author, tags, summary and body). Tag, search and sort state is kept in the URL (`/blog/?tag=interview&q=...`).
+- **Posts** have a byline, date, reading time, tags, optional cover image, **footnotes** (`[^1]`), **pull-quotes** (blockquotes), **embedded video/podcast** (YouTube/Spotify via an editor-panel component), **share buttons** (WhatsApp, X, LinkedIn, Facebook, Email, Copy link; no comments) and **related posts** (by shared tags).
+- Other pages: Home (latest issue, Featured, From the Blog, Issues, In the Department, About teaser), About, In the Department (events), Reach Out, 404.
+
+### Editing workflow (decided with the user)
+Students submit by email; **editors post everything** through the editor panel at `/admin/` (Decap CMS). It uses an **editorial workflow** (Draft, In review, Ready, then Publish) with a **live preview** in the editor and a full **preview website per draft** (Cloudflare Pages builds each draft branch before it is published).
 
 ```
-src/config.ts            site name, email, social links (edit here)
-src/content/issues/      one .md per issue (number, title, color, cover, pdf, summary; body = optional web version)
-src/content/featured/    Featured cards (Dr. Pogge, essays, interviews)
-src/content/events/      "In the Department" events (date, speaker, photo, caption as body)
-src/content/pages/about.md   About Us text and pull quote
-src/pages/               index, about, editions (+ [id] per issue), department, contact, 404
-src/components, layouts  IssueCover, EventCard, Contact, Base layout (header/footer)
+src/config.ts            site name, email, social links
+src/content/posts/       blog posts (.md): title, date, author, summary, tags, cover; body = the post
+src/content/issues/      one .md per issue: number, title, date, pdf, cover, color
+src/content/featured/    Featured cards (can link to a blog post)
+src/content/events/      "In the Department" events
+src/content/pages/about.md
+src/pages/               index, about, issues/, blog/ (+ [id], search-index.json), department, contact, 404
+src/components, layouts  PostCard, ShareButtons, IssueCard, IssueCover, EventCard, Contact, Base
 src/styles/global.css    all design-A styling
-public/admin/            Decap CMS editor panel (index.html + config.yml)
+public/admin/            editor panel (index.html with live preview + embed component, config.yml)
 public/uploads/          images and PDFs uploaded through the editor panel
 reference/               original design mockups A, B, C
+scripts/                 copies global.css to public/admin/preview.css (runs before dev/build)
 ```
 
-Run it: `npm install`, then `npm run dev` (http://localhost:4321) or `npm run build` (output in `dist/`).
-It builds cleanly (9 pages). All routes were checked and return 200.
+Run it: `npm install`, then `npm run dev` (http://localhost:4321) or `npm run build` (output in `dist/`). It builds cleanly (10 pages). Verified in a browser: blog search, tag filter and sort, post page with footnote/pull-quote/share buttons, and all routes.
 
-**All text in `[square brackets]` is placeholder.** The event dates and the three issues are placeholders too. "Upcoming" vs "Past" for events is decided at build time (event date vs. today), so the site is rebuilt on each content change.
-
-**Issues can be PDF, web articles, or both:** set `pdf:` in the issue's front matter for a PDF button, and/or write the article in the issue's markdown body.
+**All text in `[square brackets]` is placeholder**, including the three sample posts, three issues and three events. Event "Upcoming/Past" is decided at build time.
 
 ### Not done yet
-- **Editor panel sign-in:** `public/admin/config.yml` uses the GitHub backend, which needs a small OAuth proxy (e.g. a Cloudflare Worker) before students can log in at `/admin/`. Set `base_url` in config.yml once it exists. Until then, content can be edited directly in the repo. (In `npm run dev`, `/admin/` returns 404 because of the trailing-slash setting; `/admin/index.html` works, and production serves `/admin/` normally.)
-- **Not deployed:** no Cloudflare Pages project is connected yet and the domain is not pointed at it.
-- Real content, logo/cover images, social handles, and email DNS (SPF/DKIM/DMARC) are still to do.
+- **Editor panel sign-in:** the GitHub backend needs a small OAuth proxy (e.g. a Cloudflare Worker) before editors can log in at `/admin/`. Set `base_url` in `public/admin/config.yml` once it exists. The live preview, embed component and editorial workflow are written but **untested** until login works. (In `npm run dev`, `/admin/` returns 404 because of the trailing-slash setting; `/admin/index.html` works.)
+- **Not deployed:** no Cloudflare Pages project is connected and the domain is not pointed at it.
+- **Issue thumbnails:** currently the cover image if provided, else a coloured placeholder cover. Auto-generating a thumbnail from each PDF's first page is not built yet (default offered to the user; not yet confirmed).
+- Real content, logo, social handles, email DNS (SPF/DKIM/DMARC), pagination for a very long blog list.
 
 ## 5. Open questions and next steps
-1. **Which university?** Jamia Millia Islamia or Jamia Hamdard?
-2. ~~Which design?~~ **Decided: A (Classic Journal).**
-3. **Issues as PDF or web-readable articles?** PDF is faster to set up. Web articles are better for search and sharing.
-4. How comfortable are the student editors with tech (decides the CMS choice)?
-5. Real content needed: About text, advisor's name, issue titles and covers, PDFs or articles, event photos and captions, social handles, logo, colour preferences.
-6. Confirm the domain purchase is done (Spaceship, department email, 2FA, auto-renew).
-7. Next technical steps: create the GitHub and Cloudflare accounts under the department email with 2FA, add the domain to Cloudflare and point the nameservers, build the chosen design as an Astro project with Decap CMS, connect the domain, set up email forwarding (test both ways), and write a handover doc (logins, how to publish an issue, who renews the domain and when).
+Answered by the user: university (Jamia Millia Islamia); design (A); issues are PDF-only, opened in a new tab; blog is text-only with sort, tags, search; editors post everything, with draft/preview/publish; tags only (no categories); footnotes, pull-quotes, embeds; reading time and related posts; share buttons yes, comments no; byline only (no author pages, chosen by Claude).
+
+**Still to ask or confirm:**
+1. Do cover images exist for each issue, or should thumbnails be generated from each PDF's first page (default)?
+2. How many past issues exist and how large are the PDFs (repo vs. Cloudflare R2)?
+3. What each issue thumbnail should show (default: number, month and year, title).
+4. Language: English only (default), or Hindi/Urdu too (needs right-to-left support and fonts)?
+5. Keep Featured and In the Department; should Featured link to blog posts (default: yes)?
+6. How to submit: email (default) or a Google Form link.
+7. Permission to host outside contributors' work (e.g. Dr. Pogge).
+8. Newsletter box (default: skip); logo (default: keep the wordmark and maroon); launch deadline.
+9. Real content: About text, advisor's name, issue PDFs and titles, event photos and captions, social handles.
+10. Confirm the domain and Spacemail purchases are done.
+
+**Next technical steps:** create the GitHub and Cloudflare accounts under the department email with 2FA; deploy to Cloudflare Pages; add the domain to Cloudflare and point the nameservers; connect the domain; set up the editor-panel OAuth login and test the editorial workflow and previews; set up email forwarding and DNS (SPF/DKIM/DMARC), test both ways; write a handover doc (logins, how to publish an issue and a post, who renews the domain and when).
 
 ## 6. Working notes for the next Claude
 - The user wants to be guided step by step and is building the site with Claude only.
