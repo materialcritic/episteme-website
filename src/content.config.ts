@@ -74,7 +74,7 @@ const resources = defineCollection({
 });
 
 // Editorial board: one file per academic year (e.g. 2026-27.yml). The newest year is shown as the
-// current team; earlier years stay on the page as past boards.
+// current team (older years are kept as a record but not shown).
 const team = defineCollection({
   loader: glob({ pattern: '**/*.{yml,yaml}', base: './src/content/team' }),
   schema: z.object({
