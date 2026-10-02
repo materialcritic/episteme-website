@@ -1,0 +1,23 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import { fullDate } from '../lib/content';
+
+interface Props {
+  event: CollectionEntry<'events'>;
+  upcoming: boolean;
+}
+const { event, upcoming } = Astro.props;
+const { Content } = await render(event);
+const d = event.data;
+---
+<article class="ev">
+  <div class="ph">
+    {d.image ? <img src={d.image} alt={d.imageAlt ?? d.title} loading="lazy"> : (upcoming ? 'Upcoming' : 'Event photo')}
+  </div>
+  <div>
+    <div class="d">{fullDate(d.date)} · {upcoming ? 'Upcoming' : 'Past'}</div>
+    <h3>{d.title}</h3>
+    {d.speaker && <div class="kicker" style="margin-bottom:4px">{d.speaker}</div>}
+    <div class="caption"><Content /></div>
+  </div>
+</article>

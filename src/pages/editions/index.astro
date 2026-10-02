@@ -1,0 +1,25 @@
+---
+import Base from '../../layouts/Base.astro';
+import IssueCover from '../../components/IssueCover.astro';
+import Contact from '../../components/Contact.astro';
+import { getIssues, monthYear } from '../../lib/content';
+
+const issues = await getIssues();
+---
+<Base title="Past Editions" description="Every issue of Episteme.">
+  <div class="wrap">
+    <div class="page-head">
+      <h1 class="page">Past Editions</h1>
+      <p class="sub">Every issue of Episteme, newest first.</p>
+    </div>
+    <div class="editions" style="padding:10px 0 70px">
+      {issues.map((i) => (
+        <a class="ed" href={`/editions/${i.id}/`}>
+          <IssueCover issue={i} />
+          <p>{monthYear(i.data.date)}{i.data.pdf ? ' · PDF' : ''}</p>
+        </a>
+      ))}
+    </div>
+  </div>
+  <Contact />
+</Base>

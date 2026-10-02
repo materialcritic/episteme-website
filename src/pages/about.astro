@@ -1,0 +1,19 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Contact from '../components/Contact.astro';
+
+const about = await getEntry('pages', 'about');
+if (!about) throw new Error('Missing src/content/pages/about.md');
+const { Content } = await render(about);
+---
+<Base title="About" description="How Episteme began, and the people behind it.">
+  <div class="wrap">
+    <div class="page-head"><h1 class="page">{about.data.title}</h1></div>
+    <div class="about" style="padding:20px 0 60px">
+      {about.data.pullQuote && <blockquote>“{about.data.pullQuote}”</blockquote>}
+      <div class="prose"><Content /></div>
+    </div>
+  </div>
+  <Contact />
+</Base>

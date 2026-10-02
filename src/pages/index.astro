@@ -1,0 +1,84 @@
+---
+import { getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import IssueCover from '../components/IssueCover.astro';
+import EventCard from '../components/EventCard.astro';
+import Contact from '../components/Contact.astro';
+import { getIssues, getFeatured, getEvents, monthYear, pad } from '../lib/content';
+
+const issues = await getIssues();
+const latest = issues[0];
+const featured = (await getFeatured()).slice(0, 3);
+const events = (await getEvents()).slice(0, 3);
+const about = await getEntry('pages', 'about');
+const issueHref = (i: (typeof issues)[number]) => `/editions/${i.id}/`;
+---
+<Base>
+  <div class="wrap">
+    {latest && (
+      <div class="hero">
+        <div>
+          <div class="kicker">Latest Issue</div>
+          <h1>Ideas, arguments and inquiry from the Department of Political Science</h1>
+          <p>{latest.data.summary ?? 'Episteme brings together essays, interviews and scholarship on politics, justice and society.'}</p>
+          <a class="btn" href={issueHref(latest)}>Read Issue {pad(latest.data.number)}</a>
+        </div>
+        <a href={issueHref(latest)} aria-label={`Open issue ${latest.data.number}`}><IssueCover issue={latest} hero /></a>
+      </div>
+    )}
+
+    {featured.length > 0 && (
+      <section class="block" id="featured">
+        <h2>Featured</h2><p class="sub">Selected work from our editions.</p>
+        <div class="featured">
+          {featured.map((f) => {
+            const Tag = f.data.link ? 'a' : 'div';
+            return (
+              <Tag class="fcard" href={f.data.link}>
+                <div class="kicker">{f.data.kind}</div>
+                <h3>{f.data.title}</h3>
+                <p class="by">{f.data.author}{f.data.affiliation ? `, ${f.data.affiliation}` : ''}{f.data.issue ? ` · Issue ${pad(f.data.issue)}` : ''}</p>
+              </Tag>
+            );
+          })}
+        </div>
+      </section>
+    )}
+
+    {about && (
+      <section class="block about" id="about">
+        {about.data.pullQuote && <blockquote>“{about.data.pullQuote}”</blockquote>}
+        <div>
+          <h2>About Us</h2>
+          <p>How Episteme began, who guides it, and what we publish.</p>
+          <a class="more" href="/about/">Read our story</a>
+        </div>
+      </section>
+    )}
+
+    <section class="block" id="editions">
+      <h2>Past Editions</h2><p class="sub">Every issue of Episteme, in one place.</p>
+      <div class="editions">
+        {issues.slice(0, 3).map((i) => (
+          <a class="ed" href={issueHref(i)}>
+            <IssueCover issue={i} />
+            <p>{monthYear(i.data.date)}{i.data.pdf ? ' · PDF' : ''}</p>
+          </a>
+        ))}
+        <div class="ed soon"><div class="cover"><b>More coming soon</b></div><p>&nbsp;</p></div>
+      </div>
+      <a class="more" href="/editions/">View all editions</a>
+    </section>
+
+    {events.length > 0 && (
+      <section class="block" id="department">
+        <h2>In the Department</h2><p class="sub">Webinars, speaker sessions and events around Episteme.</p>
+        <div class="events">
+          {events.map((e) => <EventCard event={e.entry} upcoming={e.upcoming} />)}
+        </div>
+        <a class="more" href="/department/">All events</a>
+      </section>
+    )}
+  </div>
+  <Contact />
+</Base>

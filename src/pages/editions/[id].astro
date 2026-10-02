@@ -1,0 +1,38 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import IssueCover from '../../components/IssueCover.astro';
+import Contact from '../../components/Contact.astro';
+import { getIssues, monthYear, pad } from '../../lib/content';
+
+export async function getStaticPaths() {
+  const issues = await getIssues();
+  return issues.map((issue) => ({ params: { id: issue.id }, props: { issue } }));
+}
+const { issue } = Astro.props;
+const { Content } = await render(issue);
+const d = issue.data;
+const hasBody = Boolean(issue.body?.trim());
+---
+<Base title={`Issue ${pad(d.number)}: ${d.title}`} description={d.summary}>
+  <div class="wrap">
+    <div class="issue-top">
+      <IssueCover issue={issue} />
+      <div>
+        <div class="kicker">Issue {pad(d.number)}{d.date ? ` · ${monthYear(d.date)}` : ''}</div>
+        <h1 class="page" style="margin-top:8px">{d.title}</h1>
+        {d.summary && <p class="lede">{d.summary}</p>}
+        <div class="btns">
+          {d.pdf && <a class="btn" href={d.pdf} target="_blank" rel="noopener">Read / download PDF</a>}
+          <a class="btn ghost" href="/editions/">All editions</a>
+        </div>
+      </div>
+    </div>
+    {hasBody ? (
+      <div class="prose narrow" style="padding:50px 0 70px"><Content /></div>
+    ) : !d.pdf ? (
+      <p class="sub" style="padding:40px 0 70px">This issue will be available online soon.</p>
+    ) : null}
+  </div>
+  <Contact />
+</Base>

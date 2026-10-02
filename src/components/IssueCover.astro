@@ -1,0 +1,22 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { pad, monthYear } from '../lib/content';
+
+interface Props {
+  issue: CollectionEntry<'issues'>;
+  hero?: boolean;
+}
+const { issue, hero = false } = Astro.props;
+const d = issue.data;
+---
+{d.cover ? (
+  <div class:list={['cover', 'has-img', { 'hero-cover': hero }]}>
+    <img src={d.cover} alt={`Cover of Episteme issue ${pad(d.number)}: ${d.title}`} loading="lazy">
+  </div>
+) : (
+  <div class:list={['cover', { 'hero-cover': hero }]} style={`--c:${d.color}`}>
+    <small>Issue {pad(d.number)}</small>
+    <b>{d.title}</b>
+    <small>{monthYear(d.date) || 'Episteme'}</small>
+  </div>
+)}

@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import EventCard from '../components/EventCard.astro';
+import Contact from '../components/Contact.astro';
+import { getEvents } from '../lib/content';
+
+const events = await getEvents();
+const upcoming = events.filter((e) => e.upcoming).reverse(); // soonest first
+const past = events.filter((e) => !e.upcoming);
+---
+<Base title="In the Department" description="Webinars, speaker sessions and events around Episteme.">
+  <div class="wrap">
+    <div class="page-head">
+      <h1 class="page">In the Department</h1>
+      <p class="sub">Webinars, speaker sessions and events around Episteme.</p>
+    </div>
+    {upcoming.length > 0 && (
+      <section class="block">
+        <h2>Upcoming</h2><div style="height:20px"></div>
+        <div class="events list">{upcoming.map((e) => <EventCard event={e.entry} upcoming />)}</div>
+      </section>
+    )}
+    <section class="block" style="border-bottom:0">
+      <h2>Past events</h2><div style="height:20px"></div>
+      <div class="events list">
+        {past.map((e) => <EventCard event={e.entry} upcoming={false} />)}
+        {past.length === 0 && <p class="sub">Nothing here yet.</p>}
+      </div>
+    </section>
+  </div>
+  <Contact />
+</Base>

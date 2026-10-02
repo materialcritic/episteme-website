@@ -52,22 +52,38 @@ Total: about ₹400–600/yr without paid email, or about ₹1,500–3,000/yr wi
 5. **Reach Out to Us:** the magazine's email for queries and suggestions.
 6. Optional **Featured** section: selected work, e.g. the last issue featured work by **Dr. Pogge from Yale**, plus other notable articles from earlier editions.
 
-## 4. Files created (in this folder)
-Three static HTML design mockups. Each is a single self-contained file (inline CSS, Google Fonts via link), responsive, with placeholder text in `[square brackets]`:
+## 4. What has been built (current state)
+**Design A (Classic Journal) was chosen** and built as a real **Astro 7** static site in this repo. The three original HTML mockups are kept for reference in `reference/`.
 
-| File | Style |
-|---|---|
-| `option-a-classic.html` | **Classic Journal**: cream paper, Playfair Display and Source Serif, maroon accent, newspaper-style masthead |
-| `option-b-modern.html` | **Modern Editorial**: white, big Fraunces headlines, orange accent, horizontally scrolling issue covers, event timeline |
-| `option-c-scholar.html` | **Dark Scholar**: navy background, gold accents, Cormorant Garamond and Lora, framed issue covers |
+```
+src/config.ts            site name, email, social links (edit here)
+src/content/issues/      one .md per issue (number, title, color, cover, pdf, summary; body = optional web version)
+src/content/featured/    Featured cards (Dr. Pogge, essays, interviews)
+src/content/events/      "In the Department" events (date, speaker, photo, caption as body)
+src/content/pages/about.md   About Us text and pull quote
+src/pages/               index, about, editions (+ [id] per issue), department, contact, 404
+src/components, layouts  IssueCover, EventCard, Contact, Base layout (header/footer)
+src/styles/global.css    all design-A styling
+public/admin/            Decap CMS editor panel (index.html + config.yml)
+public/uploads/          images and PDFs uploaded through the editor panel
+reference/               original design mockups A, B, C
+```
 
-Each has: header/nav, hero, Featured (Dr. Pogge slot as the primary card), About, Past Editions (3 placeholder issues plus "coming soon"), In the Department (photo, date, title and caption per event, past and upcoming), Reach Out (`editor@epistemejamia.in` placeholder), and a footer with Instagram / LinkedIn / X / YouTube placeholders. If this handoff is used in a chat without file access, the user should attach these three HTML files.
+Run it: `npm install`, then `npm run dev` (http://localhost:4321) or `npm run build` (output in `dist/`).
+It builds cleanly (9 pages). All routes were checked and return 200.
 
-Claude's recommendation: **Option A or C** (serious, journal-like, good for an official university site). B is the freshest but reads more startup-like. The user has **not yet picked** an option.
+**All text in `[square brackets]` is placeholder.** The event dates and the three issues are placeholders too. "Upcoming" vs "Past" for events is decided at build time (event date vs. today), so the site is rebuilt on each content change.
+
+**Issues can be PDF, web articles, or both:** set `pdf:` in the issue's front matter for a PDF button, and/or write the article in the issue's markdown body.
+
+### Not done yet
+- **Editor panel sign-in:** `public/admin/config.yml` uses the GitHub backend, which needs a small OAuth proxy (e.g. a Cloudflare Worker) before students can log in at `/admin/`. Set `base_url` in config.yml once it exists. Until then, content can be edited directly in the repo. (In `npm run dev`, `/admin/` returns 404 because of the trailing-slash setting; `/admin/index.html` works, and production serves `/admin/` normally.)
+- **Not deployed:** no Cloudflare Pages project is connected yet and the domain is not pointed at it.
+- Real content, logo/cover images, social handles, and email DNS (SPF/DKIM/DMARC) are still to do.
 
 ## 5. Open questions and next steps
 1. **Which university?** Jamia Millia Islamia or Jamia Hamdard?
-2. **Which design** (A, B, C, or a mix, e.g. A's layout with C's colours)?
+2. ~~Which design?~~ **Decided: A (Classic Journal).**
 3. **Issues as PDF or web-readable articles?** PDF is faster to set up. Web articles are better for search and sharing.
 4. How comfortable are the student editors with tech (decides the CMS choice)?
 5. Real content needed: About text, advisor's name, issue titles and covers, PDFs or articles, event photos and captions, social handles, logo, colour preferences.

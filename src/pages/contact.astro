@@ -1,0 +1,15 @@
+---
+import Base from '../layouts/Base.astro';
+import Contact from '../components/Contact.astro';
+import { SITE } from '../config';
+---
+<Base title="Reach Out" description="Contact the Episteme editors.">
+  <div class="wrap">
+    <div class="page-head"><h1 class="page">Reach Out</h1></div>
+    <div class="prose narrow" style="padding:10px 0 60px">
+      <p>For questions, suggestions, or to submit your writing to Episteme, email the editors at <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
+      <p>Submissions are open to students of the Department of Political Science. Please include your name, programme and a short note on your piece.</p>
+    </div>
+  </div>
+  <Contact />
+</Base>

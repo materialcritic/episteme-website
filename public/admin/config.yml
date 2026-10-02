@@ -1,0 +1,71 @@
+# Editor panel (Decap CMS) at /admin/
+# Sign-in needs a GitHub OAuth proxy; see README "Editor panel setup".
+backend:
+  name: github
+  repo: materialcritic/episteme-website
+  branch: main
+  # base_url: https://YOUR-OAUTH-WORKER.workers.dev   # set once the OAuth proxy exists
+
+# Uncomment to test the panel locally: run `npx decap-server` next to `npm run dev`.
+# local_backend: true
+
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: issues
+    label: Issues
+    folder: src/content/issues
+    extension: md
+    create: true
+    slug: "issue-{{number}}"
+    fields:
+      - { label: Issue number, name: number, widget: number, value_type: int }
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime, required: false, time_picker: false, date_format: "YYYY-MM-DD", format: "YYYY-MM-DD" }
+      - { label: Summary, name: summary, widget: text, required: false }
+      - { label: Cover colour, name: color, widget: color, default: "#7a1f2b" }
+      - { label: Cover image, name: cover, widget: image, required: false }
+      - { label: PDF, name: pdf, widget: file, required: false }
+      - { label: Hide (draft), name: draft, widget: boolean, default: false }
+      - { label: Web version of the issue (optional), name: body, widget: markdown, required: false }
+
+  - name: featured
+    label: Featured
+    folder: src/content/featured
+    extension: md
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Author, name: author, widget: string }
+      - { label: Affiliation, name: affiliation, widget: string, required: false }
+      - { label: Type (e.g. Essay, Interview), name: kind, widget: string, default: Featured }
+      - { label: Issue number, name: issue, widget: number, value_type: int, required: false }
+      - { label: Link, name: link, widget: string, required: false }
+      - { label: Order (1 shows first), name: order, widget: number, value_type: int, default: 10 }
+
+  - name: events
+    label: Department events
+    folder: src/content/events
+    extension: md
+    create: true
+    slug: "{{year}}-{{month}}-{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime, time_picker: false, date_format: "YYYY-MM-DD", format: "YYYY-MM-DD" }
+      - { label: Speaker, name: speaker, widget: string, required: false }
+      - { label: Photo, name: image, widget: image, required: false }
+      - { label: Photo description (for accessibility), name: imageAlt, widget: string, required: false }
+      - { label: Caption, name: body, widget: markdown }
+
+  - name: pages
+    label: Pages
+    files:
+      - label: About
+        name: about
+        file: src/content/pages/about.md
+        fields:
+          - { label: Title, name: title, widget: string }
+          - { label: Pull quote, name: pullQuote, widget: string, required: false }
+          - { label: Body, name: body, widget: markdown }

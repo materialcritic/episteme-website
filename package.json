@@ -1,0 +1,20 @@
+{
+  "name": "episteme-website",
+  "version": "1.0.0",
+  "description": "Website for Episteme, the magazine of the Department of Political Science, Jamia University",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/materialcritic/episteme-website.git"
+  },
+  "license": "UNLICENSED",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "astro": "^7.3.5"
+  }
+}
