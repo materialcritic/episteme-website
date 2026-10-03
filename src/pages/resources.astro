@@ -38,19 +38,17 @@ const sections = await Promise.all(
         <h2>{s.title}</h2><p class="sub">{s.sub}</p>
         {s.items.length > 0 ? (
           <div class="res-grid">
-            {s.items.map(({ r, Content }) => {
-              const Tag = r.data.link ? 'a' : 'article';
-              return (
-                <Tag class="res-card" href={r.data.link} target={r.data.link ? '_blank' : undefined} rel={r.data.link ? 'noopener' : undefined}>
-                  <div class="kicker">{s.title.replace(/s$/, '')}</div>
-                  <h3>{r.data.title}</h3>
-                  {r.data.author && <p class="by">{r.data.author}</p>}
-                  {r.data.description && <p class="desc">{r.data.description}</p>}
-                  {Content && <div class="prose"><Content /></div>}
-                  {r.data.link && <span class="go">{s.cta} ↗</span>}
-                </Tag>
-              );
-            })}
+            {s.items.map(({ r, Content }) => (
+              // The card is not one big link, because reading lists contain their own links.
+              <article class="res-card">
+                <div class="kicker">{s.title.replace(/s$/, '')}</div>
+                <h3>{r.data.link ? <a href={r.data.link} target="_blank" rel="noopener">{r.data.title}</a> : r.data.title}</h3>
+                {r.data.author && <p class="by">{r.data.author}</p>}
+                {r.data.description && <p class="desc">{r.data.description}</p>}
+                {Content && <div class="prose"><Content /></div>}
+                {r.data.link && <a class="go" href={r.data.link} target="_blank" rel="noopener">{s.cta} ↗</a>}
+              </article>
+            ))}
           </div>
         ) : (
           <p class="sub">Coming soon.</p>

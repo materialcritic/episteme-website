@@ -30,7 +30,7 @@ const tags = [...counts.entries()].sort((a, b) => a[1].name.localeCompare(b[1].n
     </div>
 
     {tags.length > 0 && (
-      <div class="tagbar" id="tagbar" aria-label="Filter by tag">
+      <div class="tagbar" id="tagbar" role="group" aria-label="Filter by tag">
         <button type="button" data-tag="" aria-pressed="true">All</button>
         {tags.map(([slug, t]) => <button type="button" data-tag={slug} aria-pressed="false">{t.name} <span>{t.n}</span></button>)}
       </div>

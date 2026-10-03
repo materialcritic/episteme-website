@@ -3,3 +3,4 @@ dist
 .astro
 .DS_Store
 public/admin/preview.css
+public/admin/decap/

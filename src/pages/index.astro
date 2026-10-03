@@ -30,7 +30,7 @@ const latestNew = Boolean(latest?.data.pdf);
           </a>
           <a class="btn ghost" style="margin-left:10px" href="/blog/">Read the blog</a>
         </div>
-        <a href={latestHref} target={latestNew ? '_blank' : undefined} rel={latestNew ? 'noopener' : undefined} aria-label={`Open issue ${latest.data.number}`}>
+        <a href={latestHref} target={latestNew ? '_blank' : undefined} rel={latestNew ? 'noopener' : undefined}>
           <IssueCover issue={latest} hero />
         </a>
       </div>

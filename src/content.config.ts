@@ -2,6 +2,18 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
+// Links and file paths typed into the editor panel. Only site paths (/blog/my-post/, /uploads/x.pdf)
+// and web or email links are accepted, so a pasted "javascript:" link fails the build instead of
+// reaching a reader's browser.
+const safeUrl = z
+  .string()
+  .trim()
+  .refine((v) => /^(\/(?!\/)|https?:\/\/|mailto:)/i.test(v), {
+    message: 'Use a site path such as /blog/my-post/ or a full https:// link',
+  });
+// Cover colours go into a style attribute, so only plain hex colours are allowed.
+const hexColor = z.string().regex(/^#[0-9a-fA-F]{3,8}$/, 'Use a hex colour such as #7a1f2b');
+
 // Past issues: shown as a grid of covers. Clicking one opens the PDF in a new tab.
 const issues = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/issues' }),
@@ -11,10 +23,10 @@ const issues = defineCollection({
     date: z.coerce.date().optional(),
     summary: z.string().optional(),
     // Cover colour (hex), used until a cover image is added.
-    color: z.string().default('#7a1f2b'),
-    cover: z.string().optional(),
+    color: hexColor.default('#7a1f2b'),
+    cover: safeUrl.optional(),
     // Path to the PDF, e.g. /uploads/issue-03.pdf. Without it the card shows "PDF coming soon".
-    pdf: z.string().optional(),
+    pdf: safeUrl.optional(),
     draft: z.boolean().default(false),
   }),
 });
@@ -28,7 +40,7 @@ const posts = defineCollection({
     author: z.string(),
     summary: z.string(),
     tags: z.array(z.string()).default([]),
-    cover: z.string().optional(),
+    cover: safeUrl.optional(),
     coverAlt: z.string().optional(),
     draft: z.boolean().default(false),
   }),
@@ -43,7 +55,7 @@ const featured = defineCollection({
     kind: z.string().default('Featured'),
     issue: z.number().optional(),
     // Where the card links to: a blog post (/blog/some-post/) or a PDF.
-    link: z.string().optional(),
+    link: safeUrl.optional(),
     order: z.number().default(10),
   }),
 });
@@ -54,7 +66,7 @@ const events = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
     speaker: z.string().optional(),
-    image: z.string().optional(),
+    image: safeUrl.optional(),
     imageAlt: z.string().optional(),
   }),
 });
@@ -68,7 +80,7 @@ const resources = defineCollection({
     author: z.string().optional(),
     description: z.string().optional(),
     // A link to the book, an article, or a PDF of the course outline.
-    link: z.string().optional(),
+    link: safeUrl.optional(),
     order: z.number().default(10),
   }),
 });
@@ -84,7 +96,7 @@ const team = defineCollection({
         name: z.string(),
         role: z.string(),
         group: z.enum(['Faculty Advisor', 'Editorial Board', 'Team']).default('Editorial Board'),
-        photo: z.string().optional(),
+        photo: safeUrl.optional(),
         bio: z.string().optional(),
       }),
     ),

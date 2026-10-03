@@ -20,14 +20,14 @@ const initials = (name: string) =>
       const members = current.data.members.filter((m) => m.group === g);
       return members.length > 0 && (
         <section class="team-group">
-          <h3>{g}</h3>
+          <h2>{g}</h2>
           <div class:list={['team-grid', { lead: g === 'Faculty Advisor' }]}>
             {members.map((m) => (
               <article class="member">
                 <div class="avatar">{m.photo ? <img src={m.photo} alt="" loading="lazy"> : initials(m.name)}</div>
                 <div>
                   <div class="role">{m.role}</div>
-                  <h4>{m.name}</h4>
+                  <h3>{m.name}</h3>
                   {m.bio && <p>{m.bio}</p>}
                 </div>
               </article>

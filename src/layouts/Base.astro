@@ -3,6 +3,7 @@ import '../styles/fonts.css';
 import '../styles/global.css';
 import { SITE } from '../config';
 import { getIssues, pad } from '../lib/content';
+import { JS_FLAG } from '../js-flag.mjs';
 
 interface Props {
   title?: string;
@@ -50,19 +51,21 @@ const nav = [
   <link rel="preload" href="/fonts/source-serif-4-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="/fonts/playfair-display-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
   <!-- Animations and the phone menu only kick in when JavaScript runs; without it everything is simply visible. -->
-  <script is:inline>document.documentElement.classList.add('js')</script>
+  <script is:inline set:html={JS_FLAG}></script>
 </head>
 <body>
   {progress && <div class="progress" aria-hidden="true"></div>}
   <a class="skip" href="#main">Skip to content</a>
-  <div class="topbar"><div class="wrap">
-    <span>{SITE.dept}</span>
-    {latest && <span>Issue {pad(latest.data.number)} · Latest</span>}
-  </div></div>
-  <header class="masthead"><div class="wrap">
-    <a class="logo" href="/">{SITE.name}</a>
-    <div class="tagline">{SITE.tagline}</div>
-  </div></header>
+  <header>
+    <div class="topbar"><div class="wrap">
+      <span>{SITE.dept}</span>
+      {latest && <span>Issue {pad(latest.data.number)} · Latest</span>}
+    </div></div>
+    <div class="masthead"><div class="wrap">
+      <a class="logo" href="/">{SITE.name}</a>
+      <div class="tagline">{SITE.tagline}</div>
+    </div></div>
+  </header>
   <nav class="main" aria-label="Main">
     <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links">Menu</button>
     <div class="wrap" id="nav-links">

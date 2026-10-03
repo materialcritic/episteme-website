@@ -4,6 +4,9 @@ backend:
   name: github
   repo: materialcritic/episteme-website
   branch: main
+  # Editors' GitHub sign-in only gets access to public repositories, not every repository they own.
+  # (Change to "repo" only if this repository is ever made private.)
+  auth_scope: public_repo
   # base_url: https://YOUR-OAUTH-WORKER.workers.dev   # set once the OAuth proxy exists
 
 # Uncomment to test the panel locally: run `npx decap-server` next to `npm run dev`.
@@ -64,9 +67,9 @@ collections:
       - { label: Title, name: title, widget: string }
       - { label: Author, name: author, widget: string }
       - { label: Affiliation, name: affiliation, widget: string, required: false }
-      - { label: Type (e.g. Essay, Interview), name: kind, widget: string, default: Featured }
+      - { label: "Type (e.g. Essay, Interview)", name: kind, widget: string, default: Featured }
       - { label: Issue number, name: issue, widget: number, value_type: int, required: false }
-      - { label: Link, name: link, widget: string, required: false, hint: "A blog post such as /blog/my-post/ or a PDF" }
+      - { label: Link, name: link, widget: string, required: false, pattern: ['^(/(?!/)|https?://|mailto:)', 'Use a site path such as /blog/my-post/ or a full https:// link'], hint: "A blog post such as /blog/my-post/ or a PDF" }
       - { label: Order (1 shows first), name: order, widget: number, value_type: int, default: 10 }
 
   - name: events
@@ -96,9 +99,9 @@ collections:
       - { label: Type, name: type, widget: select, options: [{ label: Reading list, value: reading-list }, { label: Book suggestion, value: book }, { label: Course outline, value: course }] }
       - { label: Author / instructor, name: author, widget: string, required: false }
       - { label: Short description, name: description, widget: text, required: false }
-      - { label: Link, name: link, widget: string, required: false, hint: "Link to the book, an article, or a PDF of the course outline" }
+      - { label: Link, name: link, widget: string, required: false, pattern: ['^(/(?!/)|https?://|mailto:)', 'Use a site path such as /blog/my-post/ or a full https:// link'], hint: "Link to the book, an article, or a PDF of the course outline" }
       - { label: Order (1 shows first), name: order, widget: number, value_type: int, default: 10 }
-      - { label: Details (for reading lists: the list of texts), name: body, widget: markdown, required: false }
+      - { label: "Details (for reading lists: the list of texts)", name: body, widget: markdown, required: false }
 
   - name: team
     label: Editorial board

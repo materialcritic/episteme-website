@@ -68,8 +68,16 @@ Total: about ₹400–600/yr without paid email, or about ₹1,500–3,000/yr wi
 - **Fonts are self-hosted** (no Google requests): `scripts/build-fonts.mjs` copies the Latin and Latin Extended subsets of Playfair Display, Source Serif 4 and Inter from the `@fontsource` dev packages into `public/fonts/` and writes `src/styles/fonts.css`. Re-run it only if the font list changes.
 - **Animations:** masthead fade-in; sections and cards fade up as they scroll into view (scroll-position based, not IntersectionObserver, which failed on pages opened through view transitions); hover lift on cards and covers; animated nav underline; cross-page fade (CSS view transitions); reading-progress bar on blog posts. All motion is off for users with "reduce motion" set, and nothing is hidden if JavaScript fails.
 - **Phone menu:** under 820px the nav collapses behind a "Menu" button.
-- **SEO and ops:** sitemap (`/sitemap-index.xml`), `robots.txt` (blocks `/admin/`), canonical and Open Graph tags, blog RSS feed (`/rss.xml`, also usable by newsletter tools to email new posts), Cloudflare `_headers` (security headers, long cache for built assets), Node pinned with `.nvmrc` and `engines`, Decap CMS pinned to 3.16.3.
-- **Daily rebuild:** `.github/workflows/daily-rebuild.yml` triggers a Cloudflare deploy hook every morning (06:00 IST) so events move from Upcoming to Past automatically. Needs a `CF_DEPLOY_HOOK` repo secret; it skips quietly until that is set.
+- **SEO and ops:** sitemap (`/sitemap-index.xml`), `robots.txt` (blocks `/admin/`), canonical and Open Graph tags, blog RSS feed (`/rss.xml`, also usable by newsletter tools to email new posts), Cloudflare `_headers` (security headers, long cache for built assets), Node pinned with `.nvmrc` and `engines`, Decap CMS pinned to 3.16.3. Print stylesheet: posts print without navigation or buttons, and fade-in content is never left blank on paper.
+- **Security (audit of 2026-10-03):**
+  - **Content-Security-Policy** on every page via Astro's `security.csp` in `astro.config.mjs`. Astro fingerprints the site's own scripts on each build, so any script that gets into content is refused by the browser. A new embed service, analytics or newsletter widget needs its domain added there (Cloudflare Web Analytics notes are in the file). Keep Cloudflare **Rocket Loader off**: it rewrites scripts and breaks the policy.
+  - **`public/_headers`** adds HSTS, `frame-ancestors`, Cross-Origin-Opener-Policy (`same-origin-allow-popups`, which the GitHub login popup needs), Permissions-Policy, `script-src 'none'` for `/uploads/*` (uploaded files are displayed, never run; PDFs still open), a strict policy for `/admin/*`, and `noindex` for the `pages.dev` copies.
+  - **Decap CMS is self-hosted**, not loaded from unpkg. `scripts/fetch-decap.mjs` downloads the pinned version from the npm registry, checks its SHA-512 against the registry checksum, and copies it to `public/admin/decap/` (gitignored) before every dev/build. To upgrade Decap, change `VERSION` and `INTEGRITY` in that script.
+  - **Editor panel:** setup code lives in `public/admin/cms-setup.js` (no inline scripts). The Embed button only creates YouTube and Spotify players; other https links are inserted as plain links. `auth_scope: public_repo` limits editors' GitHub sign-in to public repositories.
+  - **Link and file fields are validated** (`safeUrl` in `src/content.config.ts`, plus `pattern` on the link fields in `config.yml`): only `/paths`, `http(s)://` and `mailto:` are accepted, so a `javascript:` link fails the build. Cover colours must be hex.
+  - `daily-rebuild.yml` runs with `permissions: {}`.
+  - **The inline `js` flag script** (`src/js-flag.mjs`) is the one inline script Astro cannot fingerprint itself, so `astro.config.mjs` hashes it into the policy from the same text the page uses. Do not add other inline scripts without doing the same, or the browser will block them. Verified on the production build: menu, animations, blog search, citations and the editor panel all run with the policy active. `astro check` skips the downloaded `public/admin/decap/` bundle.
+- **Daily rebuild:** `.github/workflows/daily-rebuild.yml` triggers a Cloudflare deploy hook every morning (06:00 IST) so events move from Upcoming to Past automatically. Needs a `CF_DEPLOY_HOOK` repo secret; it skips quietly until that is set. Caveat: GitHub pauses scheduled workflows in public repos after 60 days without a commit (e.g. over the summer break), and the schedule then has to be re-enabled in the Actions tab. A Cloudflare Worker cron trigger calling the same hook would avoid this.
 - Other pages: Home (latest issue, Featured, From the Blog, Issues, In the Department, About teaser), About, In the Department (events), Reach Out, 404.
 
 ### Editing workflow (decided with the user)
@@ -85,18 +93,19 @@ src/content/pages/about.md
 src/pages/               index, about, issues/, blog/ (+ [id], search-index.json), department, contact, 404
 src/components, layouts  PostCard, ShareButtons, IssueCard, IssueCover, EventCard, Contact, Base
 src/styles/global.css    all design-A styling
-public/admin/            editor panel (index.html with live preview + embed component, config.yml)
+public/admin/            editor panel (index.html, cms-setup.js with live preview + embed component, config.yml)
 public/uploads/          images and PDFs uploaded through the editor panel
 reference/               original design mockups A, B, C
-scripts/                 copies global.css to public/admin/preview.css (runs before dev/build)
+scripts/                 before dev/build: sync-preview-css.mjs (global.css -> public/admin/preview.css) and
+                         fetch-decap.mjs (checksum-verified Decap CMS -> public/admin/decap/); build-fonts.mjs (manual)
 ```
 
-Run it: `npm install`, then `npm run dev` (http://localhost:4321) or `npm run build` (output in `dist/`). It builds cleanly (10 pages). Verified in a browser: blog search, tag filter and sort, post page with footnote/pull-quote/share buttons, and all routes.
+Run it: `npm install`, then `npm run dev` (http://localhost:4321) or `npm run build` (output in `dist/`). It builds cleanly (13 pages). Verified in a browser: blog search, tag filter and sort, post page with footnote/pull-quote/share buttons, and all routes.
 
 **All text in `[square brackets]` is placeholder**, including the three sample posts, three issues and three events. Event "Upcoming/Past" is decided at build time.
 
 ### Not done yet
-- **Editor panel sign-in:** the GitHub backend needs a small OAuth proxy (e.g. a Cloudflare Worker) before editors can log in at `/admin/`. Set `base_url` in `public/admin/config.yml` once it exists. The live preview, embed component and editorial workflow are written but **untested** until login works. (In `npm run dev`, `/admin/` returns 404 because of the trailing-slash setting; `/admin/index.html` works.)
+- **Editor panel sign-in:** the GitHub backend needs a small OAuth proxy (e.g. a Cloudflare Worker) before editors can log in at `/admin/`. Set `base_url` in `public/admin/config.yml` once it exists. The live preview, embed component and editorial workflow are written but **untested** until login works. (In `npm run dev`, `/admin/` returns 404 because of the trailing-slash setting; `/admin/index.html` works.) If sign-in fails once the proxy exists, check the browser console for a domain blocked by the `/admin/*` policy in `public/_headers`. Note: before 2026-10-03, `config.yml` was invalid YAML (unquoted labels containing `:` or `,`) and the panel showed "Error loading the CMS configuration"; quote any label that contains those characters.
 - **Not deployed:** no Cloudflare Pages project is connected and the domain is not pointed at it.
 - **Issue thumbnails:** currently the cover image if provided, else a coloured placeholder cover. Auto-generating a thumbnail from each PDF's first page is not built yet (default offered to the user; not yet confirmed).
 - Real content, logo, social handles, email DNS (SPF/DKIM/DMARC), pagination for a very long blog list.

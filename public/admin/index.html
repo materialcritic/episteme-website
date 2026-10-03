@@ -7,46 +7,9 @@
   <title>Episteme · Editor panel</title>
 </head>
 <body>
-  <script src="https://unpkg.com/decap-cms@3.16.3/dist/decap-cms.js"></script>
-  <script>
-    // Live preview: shows the post with the site's own fonts and styles while editing.
-    CMS.registerPreviewStyle('/admin/preview.css');
-
-    const PostPreview = ({ entry, widgetFor }) => {
-      const d = (k) => entry.getIn(['data', k]);
-      const tags = (entry.getIn(['data', 'tags']) || []).toJS ? entry.getIn(['data', 'tags']).toJS() : [];
-      return h('article', { className: 'wrap post-page' },
-        h('header', { className: 'post-head' },
-          h('h1', { className: 'page' }, d('title') || 'Untitled post'),
-          h('p', { className: 'by' }, 'By ', h('strong', {}, d('author') || '[Author]'), d('date') ? ' · ' + d('date') : ''),
-          h('div', { className: 'tags' }, tags.map((t) => h('span', { className: 'tag', key: t }, t)))
-        ),
-        h('div', { className: 'prose narrow' }, widgetFor('body'))
-      );
-    };
-    CMS.registerPreviewTemplate('posts', PostPreview);
-
-    // "+ > Embed": paste a YouTube or Spotify link and it becomes a responsive player.
-    function embedHtml(url) {
-      url = (url || '').trim();
-      let m;
-      if ((m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/))) {
-        return '<div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/' + m[1] + '" title="Video" allowfullscreen loading="lazy"></iframe></div>';
-      }
-      if ((m = url.match(/open\.spotify\.com\/(?:embed\/)?(episode|show|track)\/(\w+)/))) {
-        return '<div class="embed audio"><iframe src="https://open.spotify.com/embed/' + m[1] + '/' + m[2] + '" title="Podcast" loading="lazy"></iframe></div>';
-      }
-      return '<div class="embed"><iframe src="' + url + '" title="Embedded content" loading="lazy"></iframe></div>';
-    }
-    CMS.registerEditorComponent({
-      id: 'embed',
-      label: 'Embed video / podcast',
-      fields: [{ name: 'url', label: 'Paste a YouTube or Spotify link', widget: 'string' }],
-      pattern: /^<div class="embed(?: audio)?"><iframe src="([^"]+)"[^>]*><\/iframe><\/div>$/,
-      fromBlock: (match) => ({ url: match[1] }),
-      toBlock: (obj) => embedHtml(obj.url),
-      toPreview: (obj) => embedHtml(obj.url),
-    });
-  </script>
+  <!-- Decap CMS is served from this site, not a CDN: scripts/fetch-decap.mjs copies it into
+       /admin/decap/ at build time after checking its checksum. Setup code is in cms-setup.js. -->
+  <script src="/admin/decap/decap-cms.js"></script>
+  <script src="/admin/cms-setup.js"></script>
 </body>
 </html>

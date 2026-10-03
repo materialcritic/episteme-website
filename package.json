@@ -6,8 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "predev": "node scripts/sync-preview-css.mjs",
-    "prebuild": "node scripts/sync-preview-css.mjs"
+    "predev": "node scripts/sync-preview-css.mjs && node scripts/fetch-decap.mjs",
+    "prebuild": "node scripts/sync-preview-css.mjs && node scripts/fetch-decap.mjs"
   },
   "repository": {
     "type": "git",

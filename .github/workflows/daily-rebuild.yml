@@ -6,13 +6,16 @@ on:
   schedule:
     - cron: "30 0 * * *" # 06:00 IST
   workflow_dispatch:
+# This job only calls a URL, so it gets no access to the repository.
+permissions: {}
 jobs:
   rebuild:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Trigger Cloudflare Pages build
         env:
           HOOK: ${{ secrets.CF_DEPLOY_HOOK }}
         run: |
           if [ -z "$HOOK" ]; then echo "CF_DEPLOY_HOOK not set yet; skipping."; exit 0; fi
-          curl -fsS -X POST "$HOOK"
+          curl -fsS --retry 3 --retry-delay 15 --max-time 30 -X POST "$HOOK" > /dev/null

@@ -15,7 +15,7 @@ const links = [
   ['Email', `mailto:?subject=${t}&body=${u}`],
 ];
 ---
-<div class="share" aria-label="Share this post">
+<div class="share" role="group" aria-label="Share this post">
   <span class="kicker">Share</span>
   {links.map(([label, href]) => <a href={href} target="_blank" rel="noopener">{label}</a>)}
   <button type="button" data-copy={url}>Copy link</button>
