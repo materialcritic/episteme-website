@@ -4,6 +4,7 @@ import '../styles/global.css';
 import { SITE } from '../config';
 import { getIssues, pad } from '../lib/content';
 import { JS_FLAG } from '../js-flag.mjs';
+import PhilosopherCursor from '../components/PhilosopherCursor.astro';
 
 interface Props {
   title?: string;
@@ -83,7 +84,10 @@ const nav = [
     )}
     © {new Date().getFullYear()} {SITE.name} · {SITE.dept}<br>
     <a href={`mailto:${SITE.email}`}>{SITE.email}</a> · <a href="/rss.xml">RSS</a>
+    {SITE.cursorThinkers.length > 0 && <div class="cursor-opt"><button type="button" id="cursor-toggle" hidden aria-pressed="false">Switch to plain cursor</button></div>}
   </div></footer>
+
+  <PhilosopherCursor />
 
   <script>
     // Phone menu toggle.

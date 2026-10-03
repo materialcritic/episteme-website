@@ -9,6 +9,11 @@ export const SITE = {
   // To go live: create a free list at Buttondown/MailerLite/Brevo and paste its form URL below.
   // Buttondown: https://buttondown.com/api/emails/embed-subscribe/YOUR-USERNAME (field name "email").
   newsletter: { action: '', emailField: 'email' },
+  // Philosopher cursor (desktop only): a small portrait trails the mouse pointer. One is picked at random
+  // per visit. To add one: save a square, circular-cropped image in public/cursors/ and add a line here.
+  cursorThinkers: [
+    { name: 'Immanuel Kant', src: '/cursors/kant.webp' },
+  ],
   // Replace each "#" with the real profile URL. Entries left as "#" are hidden.
   social: [
     { label: 'Instagram', href: '#' },

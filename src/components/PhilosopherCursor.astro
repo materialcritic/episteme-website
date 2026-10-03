@@ -1,0 +1,84 @@
+---
+import { SITE } from '../config';
+const thinkers = SITE.cursorThinkers;
+---
+{thinkers.length > 0 && (
+  <>
+    <div id="phil-cursor" aria-hidden="true" hidden data-thinkers={JSON.stringify(thinkers)}>
+      <img alt="" width="56" height="56" decoding="async">
+      <span class="phil-name"></span>
+    </div>
+    <script>
+      // Desktop-only extra: a small portrait trails the pointer. It never replaces the real cursor, so
+      // links still look clickable. Off for touch screens, for people who ask their device for reduced
+      // motion, and for anyone who switches it off with the footer button (remembered on this device).
+      const el = document.getElementById('phil-cursor');
+      const toggle = document.getElementById('cursor-toggle');
+      const eligible =
+        matchMedia('(hover: hover) and (pointer: fine)').matches &&
+        !matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const read = (k: string) => { try { return localStorage.getItem(k); } catch { return null; } };
+      const write = (k: string, v: string) => { try { localStorage.setItem(k, v); } catch { /* storage blocked: fine */ } };
+
+      if (el && eligible) {
+        const thinkers: { name: string; src: string }[] = JSON.parse(el.dataset.thinkers ?? '[]');
+        // The same thinker for the whole visit; a new random one next visit.
+        let idx = Number(sessionStorage.getItem('thinker'));
+        if (!Number.isInteger(idx) || idx < 0 || idx >= thinkers.length) {
+          idx = Math.floor(Math.random() * thinkers.length);
+          try { sessionStorage.setItem('thinker', String(idx)); } catch { /* ignore */ }
+        }
+        const thinker = thinkers[idx];
+        el.querySelector('img')!.src = thinker.src;
+        el.querySelector('.phil-name')!.textContent = thinker.name;
+
+        let on = read('plain-cursor') !== '1';
+        let tx = -100, ty = -100, x = -100, y = -100;
+        let seen = false, raf = 0, idle = 0;
+        const OFFSET = 18; // keeps the portrait clear of the arrow's tip
+
+        const frame = () => {
+          x += (tx - x) * 0.22;
+          y += (ty - y) * 0.22;
+          el.style.transform = `translate3d(${x + OFFSET}px, ${y + OFFSET}px, 0)`;
+          raf = Math.abs(tx - x) > 0.3 || Math.abs(ty - y) > 0.3 ? requestAnimationFrame(frame) : 0;
+        };
+        const kick = () => { if (!raf) raf = requestAnimationFrame(frame); };
+
+        const apply = () => {
+          document.documentElement.classList.toggle('phil-on', on);
+          if (!on) el.hidden = true;
+          if (toggle) {
+            toggle.hidden = false;
+            toggle.setAttribute('aria-pressed', String(!on));
+            toggle.textContent = on ? 'Switch to plain cursor' : 'Bring back the philosopher cursor';
+          }
+        };
+
+        addEventListener('mousemove', (e) => {
+          if (!on) return;
+          tx = e.clientX; ty = e.clientY;
+          if (!seen) { x = tx; y = ty; seen = true; }
+          el.hidden = false;
+          el.classList.remove('named');
+          clearTimeout(idle);
+          idle = window.setTimeout(() => el.classList.add('named'), 1400);
+          const target = e.target as Element | null;
+          el.classList.toggle('big', !!target?.closest?.('a, button, summary, select, input, label, [role="button"]'));
+          kick();
+        }, { passive: true });
+        addEventListener('mousedown', () => on && el.classList.add('press'));
+        addEventListener('mouseup', () => el.classList.remove('press'));
+        document.documentElement.addEventListener('mouseleave', () => { el.hidden = true; seen = false; });
+
+        toggle?.addEventListener('click', () => {
+          on = !on;
+          write('plain-cursor', on ? '0' : '1');
+          apply();
+        });
+        apply();
+      }
+    </script>
+  </>
+)}

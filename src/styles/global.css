@@ -192,6 +192,20 @@ footer.site .soc a:hover{color:#f2c7cd}
 .share a,.share button{font:600 12px 'Inter',sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:7px 12px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
 .share a:hover,.share button:hover{background:var(--ink);color:var(--paper)}
 
+/* philosopher cursor (desktop with a mouse only; the script does nothing on touch or reduced motion) */
+#phil-cursor{position:fixed;left:0;top:0;z-index:100;pointer-events:none;width:56px;height:56px;will-change:transform}
+#phil-cursor[hidden]{display:none}
+#phil-cursor img{width:56px;height:56px;border-radius:50%;border:2px solid var(--paper);box-shadow:0 0 0 1px var(--ink),0 6px 14px -4px rgba(29,26,22,.55);background:var(--ink);transition:transform .18s ease;transform-origin:0 0}
+#phil-cursor.big img{transform:scale(1.22)}
+#phil-cursor.press img{transform:scale(.88)}
+.phil-name{position:absolute;left:62px;top:18px;white-space:nowrap;background:var(--ink);color:var(--paper);font:600 11px 'Inter',sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;opacity:0;transform:translateX(-4px);transition:opacity .25s ease,transform .25s ease}
+#phil-cursor.named .phil-name{opacity:1;transform:none}
+.cursor-opt{margin-top:12px}
+.cursor-opt button{font:500 12px 'Inter',sans-serif;letter-spacing:.06em;background:none;border:0;color:#bdb3a0;text-decoration:underline;cursor:pointer}
+.cursor-opt button:hover{color:#fff}
+.cursor-opt button[hidden]{display:none}
+@media print{#phil-cursor,.cursor-opt{display:none!important}}
+
 /* motion: all of it is skipped for people who ask their device for reduced motion */
 .progress{display:none}
 @media (prefers-reduced-motion: no-preference){
